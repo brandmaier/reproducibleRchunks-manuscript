@@ -162,7 +162,11 @@ In practice, we expect cases, in which the reproduction report should be display
 ### Changing defaults
 
 Some default behavior of the package can be changed via R `options()`. The package defines the following options:
-- reproducibleRchunks.digits. This is the number of digits for rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $8$.
+- reproducibleRchunks.digits: This is the number of digits for rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $8$.
+- reproducibleRchunks.filetype: By default this is 'json' 
+- reproducibleRchunks.hashing:
+- reproducibleRchunks.hashing_algorithm: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the `digest` package is used
+- reproducibleRchunks.templates:
 
 # What could possible go wrong?
 
