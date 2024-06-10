@@ -64,12 +64,13 @@ figurelist        : no
 tablelist         : no
 footnotelist      : no
 
-classoption       : "man"
+classoption       : "man" #man
 output            : papaja::apa6_pdf
 ---
 
 ```{r setup, include = FALSE}
 library("papaja")
+library("reproducibleRchunks")
 r_refs("r-references.bib")
 ```
 
@@ -79,8 +80,13 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
-The `reproducibleRchunk` package allows you to make computational results in R testable for reproduction (does the same script with the same data produce the same results, e.g. on a different computer and/or later in time) with minimal changes to your workflow. 
-There is only a single thing you need to change in your analysis if you are already using RMarkdown: In the first code chunk of your document, load the package and then change the code chunk type from `r` to `reproducibleR` for all code chunks that should be automatically checked for reproducibility.
+R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, what are list elements) and computer code (R, python or others) in a single document.
+When ever the document is compiled (or, _knitted_ in R speak), the computer code chunks are executed and allow for the dynamic generation of parts of the document.
+A particular advantage of R Markdown is that it helps avoiding common threats to reproducibility of code, first and foremost, copy&paste errors between results of a regular R script and a scientific report (e.g., a Word document) [].
+
+
+The `reproducibleRchunk` package allows you to make computational results in R automatically testable for reproduction (does the same script with the same data produce the same results, e.g. on a different computer and/or later in time) with minimal changes to your workflow.
+There is only a single thing you need to change in your analysis if you are already using R Markdown: In the first code chunk of your document, load the package and then change the code chunk type from `r` to `reproducibleR` for all code chunks that should be automatically checked for reproducibility.
 In `reproducibleR` chunks, all newly declared variables are identified and there contents are stored in a meta data file. 
 Once a document is reproduced, in R-Markdown speak _knitted_ again [@yihui2015],
 A simple way to assess reproducibility of computational results would be  a bitwise comparison of the entire knitted document (i.e., the resulting HTML, PDF or DOCX file).
@@ -96,6 +102,12 @@ The package should be loaded in the first regular `R` code chunk in the document
 ```{r eval=FALSE}
 library(reproducibleRchunks)
 ```
+
+The package registers a new type of code chunk called `reproducibleR`.
+The following example shows a snippet from an R Markdown file, in which there is a `reproducibleR` chunk with the name _addition_. 
+In the chunk, a new variable `my_sum` is declared and defined to be the sum of a variable `x` plus one. 
+Variable `x` was declared in an earlier code chunk and is thus not subject to the reproducibility test of this chunk. 
+
 
 ![](img/rstudio-screenshot-marker2.png)
 
@@ -149,6 +161,9 @@ First, we define a reproducible code chunk by setting the code chunk language to
 Once this document is rendered the first time, a data file will be created, which stores all reproducible results, which are computed in this code block. The name of the file will contain the label name (in this example `abc`). The following code block contains two reproducible results stored in variables `x` and `y`. Those computations can be based on results computed in previous chunks (here, variable `e`).
 If the R markdown document is rendered a second time, the computational results are recomputed and compared against the original results. 
 For each result, success or failure or reproduction is reported separately.
+```{r eval=TRUE,echo=FALSE}
+e<-1
+```
 
 ```{reproducibleR abc}
 xu <- rnorm(10, mean=0, sd=1) + e
@@ -157,28 +172,60 @@ y <- 4 * 4
 
 If nothing goes wrong, rendering this markdown twice should result in a message of successful replication. To break reproducibility, remove or comment out the `set.seed()` command and render the document again. Now, you should obtain an error message indicating that the result of `x` could not be reproduced while `y` still reproduces as it is not dependend on the random number generator.
 
-In practice, we expect cases, in which the reproduction report should be displayed (e.g., when testing and reproducing) or not (e.g., when rendering a presentation or a manuscript for submission to a journal). By default, reproduction report statements are produced for each chunk. Displaying these statements can be surpressed on a chunk-by-chunk basis by setting the chunk option 
+In practice, we expect cases, in which the reproduction report should be displayed (e.g., when testing and reproducing) or not (e.g., when rendering a presentation or a manuscript for submission to a journal). By default, reproduction report statements are produced for each chunk. Displaying these statements can be suppressed on a chunk-by-chunk basis by setting the chunk option 
 
 ### Changing defaults
 
 Some default behavior of the package can be changed via R `options()`. The package defines the following options:
+
 - reproducibleRchunks.digits: This is the number of digits for rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $8$.
 - reproducibleRchunks.filetype: By default this is 'json' 
 - reproducibleRchunks.hashing:
 - reproducibleRchunks.hashing_algorithm: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the `digest` package is used
 - reproducibleRchunks.templates:
 
+Here are a few examples how these options can be changed.
+
+First, it is possible to change the precision with which numeric results are stored. By default, this is up to 8 digits. The following line reduces the precision to only four digits after the decimal point:
+
+```{r}
+options(reproducibleRchunks.digits = 4)
+```
+
+By default, computational results are stored as fingerprints using a hash function. 
+To store data in raw format, switch off hashing with the following option:
+
+```{r}
+options(reproducibleRchunks.hashing = FALSE)
+```
+
+There are various hashing functions available, which have different features. Generally, hashing functions should map objects of arbitrary size to a fixed-size alphanumeric string, they should be efficient to compute and minimize the chance of collision, that is, the chance that to different objects are mapped on to the same fingerprint.
+Supported algorithm (through the digest package, @digest2022) are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash and blake3. 
+To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint.
+
+```{r}
+options(reproducibleRchunks.hashing_algorithm = "sha256")
+```
+
+Note that these options can be changed for each chunk.
+That is, it is possible, to use fingerprints for storing results of one chunk and plain data storage for results of another chunk.
+
 # What could possible go wrong?
 
 In the following, we briefly discuss a few situations, in which threats to reproducibility happened and explain how the package handles these situations by default
 
-- A markdown 
+- Some computations are executed and their results are stored in a JSON file as planned. Later on, someone changes the code in the R Markdown file, such that the results differ and a failure of reproduction is indicated. 
 
-- The `reproducibleRchunks` package is not available anymore
+- `R` is not available anymore. As with every fashion, some day `R` will be superseded by a future programming language and/or there will be no port of `R` or the `reproducibleRchunks` package to a future computing platform. Then, the JSON format will likely still allow the possibility to read out the original computational results in that future programming language as the JSON format itself is open and transparent. 
 
-- `R` is not available anymore. As with every fashion, some day `R` will be superseded by a future programming language and/or there will be no port of `R` to a future computing platform. Then, 
+- Error `In get_engine(options$engine) :
+  Unknown language engine 'reproducibleR' This error is shown if a R Markdown file is knitted and the `reproducibleRchunks` package was not loaded. Fix this by adding the statement `library(reproducibleRchunks)` in the first code chunk of the R Markdown document.
 
 # Discussion
+
+In developing this package, we adhere to three major aspects of rigor in scientific software development [@brandmaier2024commentary]. First, the package comes with a variety of formal tests (based on the `testthat` package, @testthat2011) to test correct functioning of the package.
+Second, we provide documentation in form of this manuscript and an online documentation ([https://github.com/brandmaier/reproducibleRchunks](https://github.com/brandmaier/reproducibleRchunks)). 
+Third, bug reports and feature requests can be submitted through our github project website. 
 
 We strongly discourage making reproducibility checks on complete raw data. 
 This is mainly for two reasons.
@@ -186,7 +233,7 @@ First, there may arise unwanted data protection issues when raw data is (acciden
 Second, the JSON format is inefficient.
 It is designed to be human-readable and conformable with versioning tools such as git.
 It is not meant for storing large data and will blow up file size by a considerable factor (while at the same time losing numerical precision).
-At the same time, ensuring that the dataset identical to the one used in the original analysis was used, adding a check on the contents of a `data.frame
+At the same time, ensuring that the data set identical to the one used in the original analysis was used, adding a check on the contents of a `data.frame
 
 
 \newpage
