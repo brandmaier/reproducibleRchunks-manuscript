@@ -29,28 +29,17 @@ affiliation:
     institution   : "Max Planck UCL Centre for Computational Psychiatry and Ageing Research"
 
 authornote: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
-  Enter author note here.
+  Please address correspondence to: Prof. Dr. Andreas M. Brandmaier, Rüdesheimerstr. 50, 14197 Berlin, Germany. Email: andreas.brandmaier@medicalschool-berlin.de
 
 abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
+ Research is considered _reproducible_ if the same analysis on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research.
+ Various approaches have been suggested to increase chances of reproducibility.
+ Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, presentation).
+ However, a simple way to test whether different parts of these assets are reproducible is still missing.
+ We introduce the R package `reproducibleRchunks`, which provides a new type of code chunk in R Markdown documents, which automatically store meta data about original computational results and check later reproductions of the research assets for reproduction. 
+ With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of research assets.
   
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  
-  One or two sentences to put the results into a more **general context**.
-  
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
-  
-  <!-- https://tinyurl.com/ybremelq -->
-  
-keywords          : "keywords"
+keywords          : "reproducibility, Markdown, R"
 wordcount         : "X"
 
 bibliography      : "r-references.bib"
@@ -82,17 +71,19 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 
 R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, what are list elements) and computer code (R, python or others) in a single document [@xie2018r].
 When ever the document is compiled (or, _knitted_ in R speak), the computer code chunks are executed and allow for the dynamic generation of parts of the document.
-A particular advantage of R Markdown is that it helps avoiding common threats to reproducibility of code, first and foremost, copy&paste errors between results of a regular R script and a scientific report (e.g., a Word document) [@peikert2021reproducible].
+A particular advantage of R Markdown is that it helps avoiding common threats to reproducibility of code, first and foremost, copy&paste errors between results of a regular R script and a scientific report (e.g., a Word document) [@peikert2021reproducible];
+further, it is suitable to generate a variety of scientific assets such as posters [@posterdown2019], presentations [@xaringan2022], resumés [@vitae2023] or preregistrations [@peikert2021reproducible] from the same Markdown language.
 
 
 The `reproducibleRchunk` package allows you to make computational results in R automatically testable for reproduction (does the same script with the same data produce the same results, e.g. on a different computer and/or later in time) with minimal changes to your workflow.
 There is only a single thing you need to change in your analysis if you are already using R Markdown: In the first code chunk of your document, load the package and then change the code chunk type from `r` to `reproducibleR` for all code chunks that should be automatically checked for reproducibility.
 In `reproducibleR` chunks, all newly declared variables are identified and there contents are stored in a meta data file. 
-Once a document is reproduced, in R-Markdown speak _knitted_ again [@yihui2015],
+Furthermore, the content of the code chunks itself (that is, the code syntax) is also fingerprinted and stored, such that later non-reproduction can be traced back to either changes of the code chunk  or changes of the computation.
+Once a document is reproduced, in R-Markdown speak _knitted_ again [@yihui2015], all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
 A simple way to assess reproducibility of computational results would be  a bitwise comparison of the entire knitted document (i.e., the resulting HTML, PDF or DOCX file).
 Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over which stages of a data analysis or any other computation should be checked for reproducibility. 
 For example, if there is non-reproducibility, is it due to changes in the data file, during data cleaning or statistical modeling. 
-Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of the analysis.
+Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given data analysis (or any other computation).
 In the following, we will briefly demonstrate how successful and failed reproduction will be displayed, we will go into detail of the mechanics of the package briefly and discuss some limitations of the approach.
 
 # Demonstration
@@ -106,40 +97,51 @@ library(reproducibleRchunks)
 The package registers a new type of code chunk called `reproducibleR`.
 The following example shows a snippet from an R Markdown file, in which there is a `reproducibleR` chunk with the name _addition_. 
 In the chunk, a new variable `my_sum` is declared and defined to be the sum of a variable `x` plus one. 
-Variable `x` was declared in an earlier code chunk and is thus not subject to the reproducibility test of this chunk. 
+Variable `x` was declared in an earlier code chunk (not shown in the following screenshot) and is thus not subject to the reproducibility test of this chunk. 
 
 
 ![](img/rstudio-screenshot-marker2.png)
+In this example, the R Markdown document is knitted into a HTML-report.
+On document generation, the R code in the `reproducibleR`-chunk is executed and the value of `my_sum` is stored in a separate file. 
+A reproducibility report is shown below the code chunk to indicate all variables of the given chunk whose data are stored:
 
 ![](img/generation-step1.png)
+Once the document is generated a second time and the reproducibility data exists, the computation is executed anew and its results are compared to the stored reproducibility information on a variable by variable basis.
+The reproducibility report will now contain information about the success of the individual reproduction attempts.
+In our example, the computation was reproduced successfully:
 
 ![](img/generation-step2.png)
+If the document is regenerated and the computational result is not identical to the original result, this failure of reproduction is indicated in the reproducibility report.
+In this example, if someone changed the value of `x`, variable `my_sum` would change and the following failure would be displayed:
+
+![](img/generation-step2-failed.png)
 
 # Methods
-
-- reproducibleCodechunks - what is stored
-- hashing vs non-hashing
-- how does the JSON look like?
-- meta-data payload
 
 The package executes reproducibleR code chunks as regular R code.
 Once code execution is completed, it gathers information about all variables that were newly declared in the current chunk. 
 The contents of those variables are stored in a separate JSON data file.
 The name of the JSON file contains the original Markdown file and the chunk label and always starts with the prefix `repro`). 
-That is, if reproducibility information of a chunk labelled `datacleaning` in the file `sem_analysis.Rmd` is stored
+That is, if reproducibility information of a chunk labelled `datacleaning` in the file `sem_analysis.Rmd` is stored in a file called _.repro_sem_analysis.Rmd_datacleaning.json_.
 Once the document is re-generated and JSON data files exist, their content is checked against the newly computed chunk variables for identity.
 
-```{r}
+```{r echo=FALSE}
 set.seed(42)
 numbers_ex <- rnorm(5)
 ```
+Here is an example of how the contents are stored, which is a single variable called `numbers` with a vector of five numbers `r numbers_ex` generated by the following command:
 
-Here is an example of how the contents of two objects are stored, which is a single variable called numbers with a vector of five numbers `r numbers_ex` (rounded to a specified precision):
+```{r echo=TRUE, eval=FALSE}
+numbers_ex <- rnorm(5)
+```
 
-```{r}
+This vector is serialized to a JSON file, which is an open and transparent format for storing contents that are both machine-readable but also human-readable:
+
+```{r echo=FALSE, eval=TRUE, results="asis"}
 jsonlite::serializeJSON(numbers_ex)
 ```
-## Comparisons
+
+## Comparisons of computational results
 
 ![](img/schema-json-fingerprints.png)
 
@@ -148,8 +150,8 @@ Identity of original and reproduced results are checked with `identical()` funct
 Using exact comparisons of object identity is sometimes more restrictive than one would expect.
 This is particularly true for numeric comparisons. 
 For example results of numeric computations may be logically equivalent but not bitwise equivalent; in numeric representations, there is sometimes a bit reserved for the sign of a number, thus it can be possible to have -0 and +0, which both are exactly zero in a decimal representation but the binary representations differ.
-Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit). To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, ...)
-```{r}
+Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit). To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, eight digits)
+```{r echo=FALSE, eval=TRUE, results="asis"}
 jsonlite::serializeJSON(digest::digest(numbers_ex))
 ```
 
@@ -159,7 +161,7 @@ What types of objects are suited for automated reproducibility tests? The answer
 For creating fingerprints, the package uses R's serialization methods, which take any R object as input.
 That is, all of the following variables (`x` of class _integer_, `y` of class _character_, and `z` of class _lm_) are valid examples for the automated reproducibility checks:
 
-```{r examples, eval=FALSE}
+```{r examples, eval=FALSE, echo=TRUE}
   x <- 1:10
   y <- "qr"
   z <- lm(x~1, method=y)
@@ -170,7 +172,10 @@ That is, all of the following variables (`x` of class _integer_, `y` of class _c
 In the following, we provide a practical guide on how to use reproducible R code chunks in Markdown documents.
 
 First, we define a reproducible code chunk by setting the code chunk language to `reproducibleR`. 
-Once this document is rendered the first time, a data file will be created, which stores all reproducible results, which are computed in this code block. The name of the file will contain the label name (in this example `abc`). The following code block contains two reproducible results stored in variables `x` and `y`. Those computations can be based on results computed in previous chunks (here, variable `e`).
+Once this document is rendered the first time, a data file will be created, which stores all reproducible results, which are computed in this code block. 
+The name of the file will contain the label name (in this example `abc`). 
+The following code block contains two reproducible results stored in variables `x` and `y`. 
+Those computations can be based on results computed in previous chunks (here, variable `e`).
 If the R markdown document is rendered a second time, the computational results are recomputed and compared against the original results. 
 For each result, success or failure or reproduction is reported separately.
 ```{r eval=TRUE,echo=FALSE}
@@ -182,9 +187,13 @@ xu <- rnorm(10, mean=0, sd=1) + e
 y <- 4 * 4
 ```
 
-If nothing goes wrong, rendering this markdown twice should result in a message of successful replication. To break reproducibility, remove or comment out the `set.seed()` command and render the document again. Now, you should obtain an error message indicating that the result of `x` could not be reproduced while `y` still reproduces as it is not dependend on the random number generator.
+If nothing goes wrong, rendering this markdown twice should result in a message of successful replication. 
+To break reproducibility, remove or comment out the `set.seed()` command and render the document again. 
+Now, you should obtain an error message indicating that the result of `x` could not be reproduced while `y` still reproduces as it is not dependend on the random number generator.
 
-In practice, we expect cases, in which the reproduction report should be displayed (e.g., when testing and reproducing) or not (e.g., when rendering a presentation or a manuscript for submission to a journal). By default, reproduction report statements are produced for each chunk. Displaying these statements can be suppressed on a chunk-by-chunk basis by setting the chunk option 
+In practice, we expect cases, in which the reproduction report should be displayed (e.g., when testing and reproducing) or not (e.g., when rendering a presentation or a manuscript for submission to a journal). 
+By default, reproduction report statements are produced for each chunk. 
+Displaying these statements can be suppressed on a chunk-by-chunk basis by setting the chunk option 
 
 
 ### Changing defaults
@@ -251,33 +260,38 @@ For example, the following code reformats the appearance of the code report in P
     )
 ```
 
+If users wish to entirely suppress the default reproducibility reports, they can use the option `report=FALSE` as part of the code chunk options to suppress the display. 
+Note that reproduction is still attempted and reproducibility information is still accessible through the function `get_reproducibility_summary()`.
+The other standard chunk options can be used with `reproducibleR`-code chunks as usual. 
+In particular, `eval=FALSE` suppressed execution of the code, `echo=FALSE` suppressed that the code is shown and so forth.
+
 # Discussion
 
 We introduced an R package that allows for R code chunks in R Markdown documents that are automatically tested for reproducibility. 
 The output of the package is compatible with all pandoc output formats including the standard choices html, pdf, and docx. 
 Templates can be used to customize the output and summary functions allow users to generate arbitrary reproducibility reports either within the document or as separate files.
 
-
-
 ### What could possible go wrong?
 
 In the following, we briefly discuss a few situations, in which threats to reproducibility happened and explain how the package handles these situations by default:
 
+- Error `In get_engine(options$engine) :
+  Unknown language engine 'reproducibleR' This error is shown if a R Markdown file is knitted and the `reproducibleRchunks` package was not loaded. Fix this by adding the statement `library(reproducibleRchunks)` in the first code chunk of the R Markdown document.
+  
 - Original computations were executed and stored in the JSON data file. Later, a reproduction attempt is made using the exact same R Markdown file but on a different computer. This is a classic case of non-reproducibility, which often is due to changes in the software packages and the R version the computations in the R Markdown rely upon [@epskamp2019reproducibility, @peikert2021reproducible]. Note that the goal of this package is not to guarantee reproducibility but to allow for automated testing and reporting of reproducibility. To increase the chances of reproducibility in the first place, various solutions exist [@peikert2021reproducible, @renv2022, @chan2023rang, @nagraj2023pracpac] of which a primary aspect is a way to document and recreate the original computational environment.
 
 - Some computations are executed and their results are stored in a JSON file as planned. Later on, someone changes the code in the R Markdown file, such that the results differ and a failure of reproduction is indicated. 
 
 - `R` is not available anymore. As with every fashion, some day `R` will be superseded by a future programming language and/or there will be no port of `R` or the `reproducibleRchunks` package to a future computing platform. Then, the JSON format will likely still allow the possibility to read out the original computational results in that future programming language as the JSON format itself is open and transparent. 
 
-- Error `In get_engine(options$engine) :
-  Unknown language engine 'reproducibleR' This error is shown if a R Markdown file is knitted and the `reproducibleRchunks` package was not loaded. Fix this by adding the statement `library(reproducibleRchunks)` in the first code chunk of the R Markdown document.
-
 ### Rigor in software development
-In developing this package, we adhere to three major aspects of rigor in scientific software development [@brandmaier2024commentary]. First, the package comes with a variety of formal tests (based on the `testthat` package, @testthat2011) to test correct functioning of the package.
+
+In developing this package, we adhere to three major aspects of rigor in scientific software development [@brandmaier2024commentary]. 
+First, the package comes with a variety of formal tests (based on the `testthat` package, @testthat2011) to test correct functioning of the package.
 Second, we provide documentation in form of this manuscript and an online documentation ([https://github.com/brandmaier/reproducibleRchunks](https://github.com/brandmaier/reproducibleRchunks)). 
 Third, bug reports and feature requests can be submitted through our github project website. 
 
-### Storing and publishing 
+### Storing and publishing reproducibility information
 
 We strongly discourage making reproducibility checks on complete raw data. 
 This is mainly for two reasons.
