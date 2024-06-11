@@ -156,7 +156,9 @@ numbers_ex <- sample(1:10, 5)
 This vector can be serialized in raw format to a JSON format as follows:
 
 ```{r echo=FALSE, eval=TRUE, results="asis"}
-jsonlite::serializeJSON(numbers_ex, pretty=TRUE)
+content <- jsonlite::serializeJSON(numbers_ex, pretty=TRUE)
+content <- gsub(pattern="\\n",replacement="  \n", x=content)
+cat(content)
 ```
 
 For privacy reasons and to save disk space, we actually do not store the raw data by default but only fingerprints of the data.
@@ -165,15 +167,19 @@ Fingerprints allow for an efficient comparison of identity of results while avoi
 The following shows how the information about variable `numbers` is stored using a SHA256-fingerprint:
 
 ```{r echo=FALSE, eval=TRUE, results="asis"}
-jsonlite::serializeJSON(digest::digest(numbers_ex,algo = "sha256"),pretty=TRUE)
+content <- jsonlite::serializeJSON(digest::digest(numbers_ex,algo = "sha256"),pretty=TRUE)
+content <- gsub(pattern="\\n",replacement="  \n", x=content)
+cat(content)
 ```
 
-In addition to the contents of all newly declared variables in a `reproducibleR`-chunk, the package also stores fingerprints of the code syntax.
-This is shown in the schematic in Figure \@ref(ref:jsonschema).
-```{r jsonschema, fig.cap="(ref:jsonschema)A JSON file stores fingerprints of all newly declared variables in a reproducibleR-chunk as well as fingerprints of the code chunk syntax."}
+```{r jsonschema, fig.cap="(ref:jsonschema) A JSON file stores fingerprints of all newly declared variables in a reproducibleR-chunk as well as fingerprints of the code chunk syntax."}
 knitr::include_graphics("img/schema-json-fingerprints.png")
 
 ```
+
+In addition to the contents of all newly declared variables in a `reproducibleR`-chunk, the package also stores fingerprints of the code syntax.
+This is shown in the schematic in Figure \@ref(jsonschema).
+
 
 ## Comparisons of computational results
 
