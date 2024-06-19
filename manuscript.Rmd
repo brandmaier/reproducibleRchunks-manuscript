@@ -195,7 +195,7 @@ The storage of the fingerprinted information about a code chunk and its computat
 
 Once a document is (re-)generated with reproducibility data present (i.e., reproducibleRchunks with matching JSON files), the package will compare all objects amenable for reproducibility checks.
 Identity of original and reproduced results are checked with `identical()` function from R's `base` package, which according to the R documentation is a "safe and reliable way to test two objects (even complex ones) for being exactly identical" (see `?identical` R documentation).
-Using exact comparisons of object identity is sometimes more restrictive than one would expect.
+Using exact comparisons of object identities is sometimes more restrictive than one would expect.
 This is particularly true for numeric comparisons. 
 For example results of numeric computations may be logically equivalent but not bitwise equivalent; in numeric representations, there is sometimes a bit reserved for the sign of a number, thus it can be possible to have -0 and +0, which both are exactly zero in a decimal representation but the binary representations differ.
 Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit). To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, eight digits)
