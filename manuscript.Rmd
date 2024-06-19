@@ -267,6 +267,7 @@ Some default behaviors of the package can be changed via R `options()`. The pack
 - reproducibleRchunks.hashing: Boolean. Indicates whether fingerprints should be used (default) or raw values should be stored.
 - reproducibleRchunks.hashing_algorithm: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the algorithm offered by the `digest` package are used.
 - reproducibleRchunks.templates: A list with keys corresponding to pandoc output formats and values to templates for formatting the reproducibility reports. See below for more details.
+- reproducibleRchunks.prefix: This is the prefix for the file containing reproducibility information. The filename will always contain the name of the R Markdown file and the chunk name separated by an underscore. The default prefix is `.repro`.
 
 Here are a few examples how these options can be changed.
 First, it is possible to change the precision with which numeric results are stored. By default, this is up to 8 digits. The following line reduces the precision to only four digits after the decimal point:
