@@ -90,8 +90,8 @@ Once a document is reproduced, in R-Markdown-speak _knitted_ again [@yihui2015],
 The result of the reproduction attempt is displayed in a reproducibility report for each chunk.
 Customizations of these reports are possible as we will demonstrate later.
 A simple way to assess reproducibility of computational results would be  a bitwise comparison of the entire knitted document (i.e., the resulting HTML, PDF or DOCX file).
-Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over which stages of a data analysis or any other computation should be checked for reproducibility. 
 For example, if there is non-reproducibility, is it due to changes in the data file, during data cleaning or statistical modeling. 
+Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over which stages of a data analysis or any other computation should be checked for reproducibility. 
 Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given statistical data analysis (or any other computation).
 Also, not all elements of a research asset are required to reproduce (such as the current date displayed in a presentation of results).
 In the following, we will briefly demonstrate how successful and failed reproduction will be checked and displayed by the package, we will go into details of the mechanics of the package, and discuss potential cases of non-reproducibility and how the package will support researchers in handling these cases.
