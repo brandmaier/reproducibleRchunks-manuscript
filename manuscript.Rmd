@@ -148,7 +148,7 @@ That is, there are no additional limits imposed on what can be computed and test
 Once code execution is completed, the package gathers information about all variables that were newly declared in the current chunk. 
 The contents of those variables are stored in a separate JSON data file.
 JSON is a shorthand for Java Script Object Notation and its main features are that it is an open standard for mapping complex objects to text files with high simplicity and readability for machines and humans [@lennon2009introduction].
-The name of the JSON file contains the original Markdown file and the chunk label and always starts with the prefix `repro`). 
+The name of the JSON file contains the original Markdown file and the chunk label and always starts with the prefix `repro`. 
 That is, if reproducibility information of a chunk labelled `datacleaning` in the file `sem_analysis.Rmd` is stored in a file called _.repro_sem_analysis.Rmd_datacleaning.json_.
 Once the document is re-generated and JSON data files exist, their content is checked against the newly computed chunk variables for identity.
 
