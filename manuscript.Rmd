@@ -29,7 +29,8 @@ affiliation:
     institution   : "Max Planck UCL Centre for Computational Psychiatry and Ageing Research"
 
 authornote: |
-  Please address correspondence to: Prof. Dr. Andreas M. Brandmaier, Rüdesheimerstr. 50, 14197 Berlin, Germany. Email: andreas.brandmaier@medicalschool-berlin.de
+  Please address correspondence to: Prof. Dr. Andreas M. Brandmaier, Rüdesheimerstr. 50, 14197 Berlin, Germany. Email: andreas.brandmaier@medicalschool-berlin.de.
+  The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript. 
 
 abstract: |
  Computational results are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research in digital environments.
