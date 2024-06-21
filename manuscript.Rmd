@@ -1,5 +1,5 @@
 ---
-title             : "reprodubileRchunks: R Markdown Code Chunks with Automated Reproducibility Tests"
+title             : "`reprodubileRchunks`: R Markdown Code Chunks with Automated Reproducibility Tests"
 shorttitle        : "Title"
 author: 
   - name          : "Andreas M. Brandmaier"
