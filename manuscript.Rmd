@@ -35,7 +35,7 @@ abstract: |
  Computational results are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research in digital environments.
  Various approaches have been suggested to increase chances of reproducibility.
  Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, presentation).
- However, a simple way detect changes of these assets, i.e. irreproducibility, is still missing.
+ However, a simple way to detect changes of these assets, i.e. irreproducibility, is still missing.
  We introduce the R package `reproducibleRchunks`, which provides a new type of code chunk in R Markdown documents, which automatically store meta data about original computational results and check later reproductions of the research assets for reproduction. 
  With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of research assets.
   
