@@ -1,7 +1,6 @@
 ---
 title             : "`reprodubileRchunks`: R Markdown Code Chunks with Automated Reproducibility Tests"
 shorttitle        : "Title"
-
 author: 
   - name          : "Andreas M. Brandmaier"
     affiliation   : "1,2,3"
@@ -36,7 +35,7 @@ abstract: |
  Computational results are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research in digital environments.
  Various approaches have been suggested to increase chances of reproducibility.
  Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, presentation).
- However, a simple way to test whether different parts of these assets are reproducible is still missing.
+ However, a simple way to detect changes of these assets, i.e. irreproducibility, is still missing.
  We introduce the R package `reproducibleRchunks`, which provides a new type of code chunk in R Markdown documents, which automatically store meta data about original computational results and check later reproductions of the research assets for reproduction. 
  With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of research assets.
   
@@ -77,7 +76,7 @@ Computational results, including those from statistical data analyses, are consi
  Various approaches have been suggested to increase chances of reproducibility [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac].
  Many approaches rely on R Markdown [@rmarkdown2023].
 R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, what are list elements) and computer code (R, python or others) in a single document [@xie2018r].
-When ever the document is compiled (or, _knitted_ in R speak), all of its computer code chunks are executed and thus generate dynamic content in the document.
+When ever the document is reproduced, all of its computer code chunks are executed and thus generate dynamic content in the document.
 This is particularly interesting for quantitative research reports, as  statistical results and contents of tables and figures can be dynamically generated. 
 Packages like `papaja` package [@R-papaja] further extend R Markdown's capabilities to format documents (including tables and figures) in a specific journal style, such as APA style.
 Also, (R) Markdown forms the basis of _executable research articles_ [@tsang2020welcome], a browser-based form of research articles that allows authors to enrich their publications with interactive elements, such as figures or results that dynamically change based on readers' input.
@@ -86,17 +85,18 @@ further, it is suitable to generate a variety of scientific assets other than ma
 
 
 The `reproducibleRchunk` package allows users to make computational results in R Markdown documents automatically testable for reproduction (does the same script with the same data produce the same results, e.g. on a different computer and/or later in time) with minimal changes to your workflow.
-There is only a single thing users need to change in their Markdown document if they are already using R Markdown: In the first code chunk of their document, load the package and then change the code chunk type from `r` to `reproducibleR` for all code chunks that should be automatically checked for reproducibility.
+There are only two things users need to change in their Markdown document if they are already using R Markdown: In the first code chunk of their document, load the package and then change the code chunk type from `r` to `reproducibleR` for all code chunks that should be automatically checked for reproducibility.
 In `reproducibleR` chunks, all newly declared variables are automatically identified and their contents are stored in a meta data file. 
 Furthermore, the code chunk itself (that is, the code syntax) is also fingerprinted and stored, such that later non-reproduction can be traced back to either changes of the code chunk or changes of the computation.
-Once a document is reproduced, in R-Markdown-speak _knitted_ again [@yihui2015], all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
+Once a document is reproduced, all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
 The result of the reproduction attempt is displayed in a reproducibility report for each chunk.
 Customizations of these reports are possible as we will demonstrate later.
-A simple way to assess reproducibility of computational results would be  a bitwise comparison of the entire knitted Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
+A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
 Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over which stages of a data analysis or any other computation should be checked for reproducibility. 
 For example, if there is non-reproducibility, is it due to changes in the data file, during data cleaning or statistical modeling. 
 Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given statistical data analysis (or any other computation).
 Also, not all elements of a research asset may be required to reproduce (such as the current date displayed in a presentation of results).
+This enables more detailed forensics in case of irreproducibility.
 In the following, we will briefly demonstrate how successful and failed reproduction will be checked and displayed by the package, we will go into details of the mechanics of the package, and discuss potential cases of non-reproducibility and how the package will support researchers in handling these cases.
 
 # Demonstration
@@ -112,7 +112,6 @@ On load, the package registers a new type of code chunk called `reproducibleR`.
 Figure \@ref(fig:rstudioscreen1) shows a snippet from an R Markdown file, in which there is a `reproducibleR` chunk with the name _addition_. 
 In the chunk, a new variable `my_sum` is declared and defined to be the sum of some variable `x` plus one. 
 Variable `x` was declared in an earlier code chunk (not shown in the figure) and is thus not subject to the reproducibility test of this chunk. 
-
 
 ```{r rstudioscreen1, fig.cap="Reproducibility report shown when a document is created for the first time and no reproducibility information is available yet."}
 knitr::include_graphics("img/rstudio-screenshot-marker2.png")
@@ -135,6 +134,7 @@ A snippet from the resulting generated document is shown in Figure \@ref(fig:rst
 knitr::include_graphics("img/generation-step2.png")
 
 ```
+
 If the document is regenerated and the computational result is not identical to the original result, this failure of reproduction is indicated in the reproducibility report.
 In a variation of the previous example, we assume someone changed the value of `x`, then variable `my_sum` would change and the a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
 
@@ -159,6 +159,7 @@ Once the document is re-generated and JSON data files exist, their content is ch
 set.seed(42)
 numbers <- sample(1:10, 5)
 ```
+
 Here is an example of how the contents of a single variable called `numbers` is stored in JSON format. Here, the variable content is a vector of five random draws from the number one to ten: `r numbers` generated by the following command:
 
 ```{r echo=TRUE, eval=FALSE}
@@ -197,20 +198,14 @@ In addition to the contents of all newly declared variables in a `reproducibleR`
 This allows later checks whether a potential non-reproduction is due to a modification of the code chunk since the original computation.
 The storage of the fingerprinted information about a code chunk and its computational results is illustrated in the schematic in Figure \@ref(fig:jsonschema).
 
-```{r jsonschema, fig.cap="A JSON file stores fingerprints of all newly declared variables in a reproducibleR-chunk as well as fingerprints of the code chunk syntax. This image by Andreas Brandmaier and Anke Schneider is licensed under CC BY 4.0"}
+```{r jsonschema, fig.cap="A JSON file stores fingerprints of all newly declared variables in a reproducibleR-chunk as well as fingerprints of the code chunk syntax. This image by Andreas Brandmaier and Anke Schneider is licensed under [CC BY 4.0]( https://creativecommons.org/licenses/by/4.0/)"}
 knitr::include_graphics("img/schema-json-fingerprints_v4.png")
-
 ```
 
 ## Comparisons of computational results
 
 Once a document is (re-)generated with reproducibility data present (i.e., reproducibleRchunks with matching JSON files), the package will compare all objects amenable for reproducibility checks.
 Identity of original and reproduced results are checked with `identical()` function from R's `base` package, which according to the R documentation is a "safe and reliable way to test two objects (even complex ones) for being exactly identical" (see `?identical` R documentation).
-Using exact comparisons for testing object identity is sometimes more restrictive than one would expect.
-This is particularly true for numeric comparisons. 
-For example results of numeric computations may be logically equivalent but not bitwise equivalent; in numeric representations, there is sometimes a bit reserved for the sign of a number, thus it can be possible to have -0 and +0, which both are exactly zero in a decimal representation but the binary representations differ.
-Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit). To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, eight digits)
-
 
 ### Types of objects
 
@@ -228,13 +223,19 @@ That is, all of the following variables (`x` of class _integer_, `y` of class _c
 Yet, we recommend subjecting simple objects to reproducibility checks, that is, preferably numeric variables such as single numbers or vectors of numbers. 
 In a typical statistical data analysis this would correspond to, for example, parameter estimates, effect size estimates, confidence interval limits, p values, fit indices, or Bayes factors.
 While virtually any R object is serializable in principle, we expect that the serialization algorithm is more likely to change over time for more complex objects in future than for simple objects.
+Using exact comparisons for testing compley object identity is sometimes more restrictive than one would expect.
+This is particularly true for numeric comparisons. 
+For example results of numeric computations may be logically equivalent but not bitwise equivalent; in numeric representations, there is sometimes a bit reserved for the sign of a number, thus it can be possible to have -0 and +0, which both are exactly zero in a decimal representation but the binary representations differ.
+Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit).
+To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, eight digits) but this mechanism only works for plain numbers/matrices and possible not for complex composite objects.
 
 ## Tutorial
 
 In the following, we provide a practical guide on how to use reproducible R code chunks in Markdown documents. First, to install the package, please install the latest version from our repository:
 
 ```{r eval=FALSE, echo=TRUE}
-devtools::install_github("brandmaier/reproducibleRchunks")
+if(!requireNamespace("pak"))install.packages("pak")
+pak::pkg_install("brandmaier/reproducibleRchunks")
 ```
 
 In your R Markdown file, load the package using  `library(reproducibleRchunks)`, preferably in the first regular R code chunk at the very top of the document.
@@ -247,16 +248,14 @@ Those computations can be based on results computed in previous chunks but those
 If the R markdown document is rendered a second time, the computational results are recomputed and compared against the original results. 
 For each result, success or failure or reproduction is reported separately.
 
-<!--
-```{reproducibleR helloworld, echo=TRUE, eval=TRUE}
+````markdown
+`r ''````{reproducibleR helloworld, echo=TRUE, eval=TRUE}
 set.seed(42)
 x <- rnorm(10, mean=0, sd=1) 
 y <- 4 * 4
 ```
--->
-```{r fig.cap="A reproducibleR chunk with two variables automatically tested for reproducibility."}
-knitr::include_graphics("img/helloworld.png")
-```
+````
+
 
 Rendering this markdown twice in a row on the same computer should result in a message of successful replication. 
 To break reproducibility, remove or comment out the `set.seed()` command, which sets the random number generator in a reproducible state, and render the document again. 
@@ -274,12 +273,23 @@ knitr::opts_chunk$set(report = FALSE)
 
 Some default behaviors of the package can be changed via R `options()`. The package defines the following options:
 
-- reproducibleRchunks.digits: This is the number of digits for rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $8$.
-- reproducibleRchunks.filetype: This is the type of data storage. Currently, we only support the 'json' format; however, this leaves room for other formats to be supported in future. 
-- reproducibleRchunks.hashing: Boolean. Indicates whether fingerprints should be used (default) or raw values should be stored.
-- reproducibleRchunks.hashing_algorithm: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the algorithm offered by the `digest` package are used.
-- reproducibleRchunks.templates: A list with keys corresponding to pandoc output formats and values to templates for formatting the reproducibility reports. See below for more details.
-- reproducibleRchunks.prefix: This is the prefix for the file containing reproducibility information. The filename will always contain the name of the R Markdown file and the chunk name separated by an underscore. The default prefix is `.repro`.
+`reproducibleRchunks.digits`
+: This is the number of digits for rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $8$.
+
+`reproducibleRchunks.filetype`
+: This is the type of data storage. Currently, we only support the 'json' format; however, this leaves room for other formats to be supported in future. 
+
+`reproducibleRchunks.hashing`
+: Boolean. Indicates whether fingerprints should be used (default) or raw values should be stored.
+
+`reproducibleRchunks.hashing_algorithm`
+: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the algorithm offered by the `digest` package are used.
+
+`reproducibleRchunks.templates`
+: A list with keys corresponding to pandoc output formats and values to templates for formatting the reproducibility reports. See below for more details.
+
+`reproducibleRchunks.prefix`
+: This is the prefix for the file containing reproducibility information. The filename will always contain the name of the R Markdown file and the chunk name separated by an underscore. The default prefix is `.repro`.
 
 Here are a few examples how these options can be changed.
 First, it is possible to change the precision with which numeric results are stored. By default, this is up to 8 digits. The following line reduces the precision to only four digits after the decimal point:
@@ -295,9 +305,18 @@ To store data in raw format, switch off hashing with the following option:
 options(reproducibleRchunks.hashing = FALSE)
 ```
 
-There are various hashing functions available, which have different features. Generally, hashing functions should map objects of arbitrary size to a fixed-size alphanumeric string, they should be efficient to compute and minimize the chance of collision, that is, the chance that to different objects are mapped on to the same fingerprint.
+```{r}
+# sha benchmark
+set.seed(345)
+benchmark <- microbenchmark::microbenchmark(digest::sha1(numbers), unit = "seconds", check = "equal", setup = {numbers <- runif(1000)})
+```
+
+There are various hashing functions available, which have different features.
+They generally differ along three dimensions: speed, chance of collisions, and security.
+Generally, hashing functions should map objects of arbitrary size to a fixed-size alphanumeric string.
+In this application, the choice of algorithm is not overly crucial.
 Supported algorithm (through the digest package, @digest2022) are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash and blake3. 
-To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint.
+To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint but comes in cost of some speed (`sha256` of a vector of 100 numbers takes `r mean(benchmark$time)` nanoseconds).
 
 ```{r eval=FALSE, echo=TRUE}
 options(reproducibleRchunks.hashing_algorithm = "sha256")
