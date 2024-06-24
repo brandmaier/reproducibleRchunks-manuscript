@@ -1,6 +1,6 @@
 ---
-title             : "`reprodubileRchunks`: R Markdown Code Chunks with Automated Reproducibility Tests"
-shorttitle        : "Title"
+title             : "Automated Reproducibility Testing in R Markdown Code Chunks"
+shorttitle        : "Reproducible R Chunks"
 author: 
   - name          : "Andreas M. Brandmaier"
     affiliation   : "1,2,3"
@@ -72,8 +72,8 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed,
                       out.width = "80%")
 ```
 
-Computational results, including those from statistical data analyses, are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research in digital environments [@epskamp2019reproducibility].
- Various approaches have been suggested to increase chances of reproducibility [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac].
+Computational results, including those from statistical data analyses, are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and credible research in digital environments [@epskamp2019reproducibility; @hardwicke2018data].
+ Various approaches have been suggested to increase chances of reproducibility of statistical data analyses in the R language [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac].
  Many approaches rely on R Markdown [@rmarkdown2023].
 R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, what are list elements) and computer code (R, python or others) in a single document [@xie2018r].
 When ever the document is reproduced, all of its computer code chunks are executed and thus generate dynamic content in the document.
@@ -411,13 +411,13 @@ At the same time, ensuring that the data set identical to the one used in the or
 
 Again, we emphasize that this package is not meant to ensure reproducibility but allows for automatically testing reproducibility.
 Even though, a variety of approaches have been suggested to ensure reproducibility of computations in R Markdown documents [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac], we ourselves have encountered various situations, in which such approaches (including our own) failed. 
-First and foremost, many approaches rely on further software packages such as Docker, which essentially provide virtual environments that run identical on different machines (or the same machine at different time points, e.g., before and after upgrade of R or some or all packages used).
+First and foremost, many approaches rely on further software packages such as Docker, which essentially provide virtual environments that execute code under identical conditions on different machines (or the same machine at different time points, e.g., before and after upgrade of R or some or all packages used).
 On some machines, Docker may simply be not available, either because it is not (yet) available on a certain newly introduced hardware (e.g., when Apple switched to their own processors) or because a user does not have admin privileges on a machine.
-Further some approaches rely on service providers such as the MRAN archive, which was unexpectedly terminated. 
-These different Achilles' heels at least occasionally lead to situations, in which users will try to locally reproduce historic computational results.
-With our package, the success of these reproductions becomes easily testable.
+Further some approaches rely on service providers such as the MRAN archive, which a while ago was unexpectedly terminated. 
+These different Achilles' heels now and then lead to situations, in which users will try to locally reproduce historic computational results and they may want to ensure that these reproductions were succesful.
+With our package, the success of such reproduction attempts becomes easily testable.
 
-We hope this package helps increasing the visibility of potential non-reproducibility issues in code and that this eventually increases quality of our research assets.
+We hope the suggested approach helps raising awareness for the importance of reproduciblity and increasing the visibility of potential non-reproducibility issues in R code, eventually increasing quality and credibility of digital research assets.
 \newpage
 
 # References
