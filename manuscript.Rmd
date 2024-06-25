@@ -113,7 +113,7 @@ Figure \@ref(fig:rstudioscreen1) shows a snippet from an R Markdown file, in whi
 In the chunk, a new variable `my_sum` is declared and defined to be the sum of some variable `x` plus one. 
 Variable `x` was declared in an earlier code chunk (not shown in the figure) and is thus not subject to the reproducibility test of this chunk. 
 
-```{r rstudioscreen1, fig.cap="Reproducibility report shown when a document is created for the first time and no reproducibility information is available yet."}
+```{r rstudioscreen1, fig.cap="Automated testing of variables for reproducibility is initiated by using code chunks of type `reproducibleR` (see yellow highlight) instead of `R` as shown in this example R Markdown snippet. "}
 knitr::include_graphics("img/rstudio-screenshot-marker2.png")
 ```
 
