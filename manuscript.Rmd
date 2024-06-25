@@ -36,8 +36,8 @@ abstract: |
  Various approaches have been suggested to increase chances of reproducibility.
  Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, presentation).
  However, a simple way to detect changes of these assets, i.e. irreproducibility, is still missing.
- We introduce the R package `reproducibleRchunks`, which provides a new type of code chunk in R Markdown documents, which automatically store meta data about original computational results and check later reproductions of the research assets for reproduction. 
- With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of research assets.
+ We introduce the R package `reproducibleRchunks`, which provides a new type of code chunk in R Markdown documents, which automatically stores meta data about original computational results and verifies later reproduction attempts.
+ With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of digital research assets.
   
 keywords          : "reproducibility, Markdown, R"
 wordcount         : "`r tryCatch(wordcountaddin::word_count(here::here('manuscript.Rmd')))`"
@@ -255,7 +255,6 @@ x <- rnorm(10, mean=0, sd=1)
 y <- 4 * 4
 ```
 ````
-
 
 Rendering this markdown twice in a row on the same computer should result in a message of successful replication. 
 To break reproducibility, remove or comment out the `set.seed()` command, which sets the random number generator in a reproducible state, and render the document again. 
