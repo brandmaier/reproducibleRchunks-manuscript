@@ -416,7 +416,7 @@ The output of the `summary()` function may be a good target for reproducibility 
 Last, note that some algorithm are not expected to reproduce identically but up to a certain precision.
 This is relevant for algorithm that are fundamentally based on random numbers, such as Monte Carlo methods, bootstrap estimators and similar.
 In this cases, approximate reproducibility tests can be realized by individually adjusting the numeric precision of the tests (see option `reproducibleRchunks.digits` as previously described).
-Adepts of the tidyverse approach [@wickham2019welcome] are probably well advised to use functions `fit()` and `glance()` from the `broom` package, which will write parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan,smooth.spline, survfit, and others) into a consistent and easy accessible format, which lends itself for fingerprinting with our suggested approach.
+Adepts of the tidyverse approach [@wickham2019welcome] are probably well advised to use functions `fit()` and `glance()` from the `broom` [@broom] package, which will write parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan,smooth.spline, survfit, and others) into a consistent and easy accessible format, which lends itself for fingerprinting with our suggested approach.
 
 # Discussion
 
