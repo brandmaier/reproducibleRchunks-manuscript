@@ -318,7 +318,7 @@ They generally differ along three dimensions: speed, chance of collisions, and s
 Generally, hashing functions should map objects of arbitrary size to a fixed-size alphanumeric string.
 In this application, the choice of algorithm is not overly crucial.
 Supported algorithm (through the digest package, @digest2022) are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash and blake3. 
-To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint but comes in cost of some speed (`sha256` of a vector of `r numbers_in_simulation` numbers takes `r mean(benchmark$time)` seconds on our standard computers).
+To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint but comes in cost of some speed (`sha256` of a vector of `r numbers_in_simulation` numbers takes `r mean_time_s` seconds on our standard computers).
 We believe that in most cases, the speed factor will be irrelevant but it could become an issue when very large objects (e.g., entire neuroimaging data sets) are fingerprinted.
 In that case, users either have to use a faster fingerprinting algorithm or forego fingerprinting raw data and instead fingerprint intermediate or final results only.
 
@@ -396,15 +396,15 @@ summary(factorFit1)
 ```
 Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error as fingerprints of the entire objects will differ.
 For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time elapsed when fitting the model. 
-Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1`. 
-Its `output` attribute contains timing variables `wallTime` and `cpuTime`, which will almost always lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility:
+Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1` run on OpenMx's demonstration dataset `demoOneFactor` including 500 observations on five numeric variables. 
+Among information relevant to reproducibility issues, its `output` attribute also contains timing variables `wallTime` and `cpuTime`, which will almost always lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility:
 
-```{r}
+```{r eval=TRUE, echo=TRUE}
 cat(factorFit1$output$wallTime)
 cat(factorFit1$output$cpuTime)
 ```
 
-Thus, we recommend a checkpoint approach, in which reproducibility tests are used only in some meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (i.e., effect size estimates, confidence intervals, Bayes factors, etc.).
+Thus, we generally recommend a checkpoint approach, in which reproducibility tests are used only at selected, meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (i.e., effect size point estimates, goodness-of-fit indices, standard error estimates, confidence intervals, test statistics, p values, Bayes factors, etc.).
 Specifically, we recommend to use at least the following checkpoints:
 - data loading: check whether the loaded raw data are identical to the data loaded in the original analysis
 - preprocessing: check whether the preprocessed data (that is, after steps such as outlier removal, aggregation, filtering) are identical to the preprocessed data in the original analysis
@@ -418,7 +418,7 @@ In this cases, approximate reproducibility tests can be realized by individually
 Adepts of the tidyverse approach [@wickham2019welcome] are probably well advised to use functions `tidy()` and `glance()` from the `broom` [@broom] package, which will write parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan,smooth.spline, survfit, and others) into a consistent and easy accessible format (a so-called _tibble_), which lends itself for fingerprinting with our suggested approach.
 Here is a brief example of how the `broom` package formats the output of a linear regression model:
 
-```{r}
+```{r echo=TRUE, eval=TRUE}
 x <- rnorm(10)
 y <- rnorm(10)
 broom::tidy(lm(y~x))
