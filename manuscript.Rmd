@@ -1,6 +1,6 @@
 ---
-title             : "Automated Reproducibility Testing in R Markdown Code Chunks"
-shorttitle        : "Reproducible R Chunks"
+title             : "Automated Reproducibility Testing in R Markdown"
+shorttitle        : "Reproducibility Testing"
 author: 
   - name          : "Andreas M. Brandmaier"
     affiliation   : "1,2,3"
@@ -99,7 +99,7 @@ Also, not all elements of a research asset may be required to reproduce (such as
 This enables more detailed forensics in case of irreproducibility.
 In the following, we will briefly demonstrate how successful and failed reproduction will be checked and displayed by the package, we will go into details of the mechanics of the package, and discuss potential cases of non-reproducibility and how the package will support researchers in handling these cases.
 
-# Demonstration
+# Introductory Example
 
 The core functionality of the package is to provide a `reproducibleR` chunk, which are code chunks in R Markdown documents that can be used like regular `R`-chunks (including name labels and the usual options regulating output parameters). 
 To use these new code chunks, the package must be loaded in the first regular `R` code chunk in the document using
@@ -367,6 +367,55 @@ As mentioned above, if users wish to entirely suppress the default reproducibili
 Note that reproduction is still attempted and reproducibility information is still accessible through the function `get_reproducibility_summary()`.
 The other standard chunk options can be used with `reproducibleR`-code chunks as usual. 
 In particular, `eval=FALSE` suppressed execution of the code, `echo=FALSE` suppressed that the code is shown and so forth.
+
+### Recommendations
+
+In the following, we give recommendations on how to use the package in typical cases of statistical data analysis and reporting.
+It is possible to simply replace all classic `R` code chunks with `reproducibleR` code chunks.
+Then, all variables created in the process of a given data analysis will be tested for reproducibility.
+However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all results will perfectly reproduce.
+
+```{r eval=TRUE, include=FALSE}
+library(OpenMx)
+
+data(demoOneFactor)
+manifests <- names(demoOneFactor)
+latents   <- c("G")
+
+factorModel1 <- mxModel(name="One Factor",
+                        type="RAM",
+                        manifestVars=manifests,
+                        latentVars=latents,
+                        mxPath(from=latents, to=manifests),
+                        mxPath(from=manifests, arrows=2),
+                        mxPath(from=latents, arrows=2, free=FALSE, values=1.0),
+                        mxData(observed=cov(demoOneFactor), type="cov", numObs=500)
+)
+
+factorFit1 <- mxRun(factorModel1)
+summary(factorFit1)
+```
+Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error as fingerprints of the entire objects will differ.
+For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time elapsed when fitting the model. 
+Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1`. 
+Its `output` attribute contains timing variables `wallTime` and `cpuTime`, which will almost always lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility:
+
+```{r}
+cat(factorFit1$output$wallTime)
+cat(factorFit1$output$cpuTime)
+```
+
+Thus, we recommend a checkpoint approach, in which reproducibility tests are used only in some meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (i.e., effect size estimates, confidence intervals, Bayes factors, etc.).
+Specifically, we recommend to use at least the following checkpoints:
+- data loading: check whether the loaded raw data are identical to the data loaded in the original analysis
+- preprocessing: check whether the preprocessed data (that is, after steps such as outlier removal, aggregation, filtering) are identical to the preprocessed data in the original analysis
+- results: check whether the results that are reported in text, tables, and figures are identical to the results of the original analysis.
+At the same time, avoid adding automated tests of entire statistical models but focus on the results.
+A convenient approach is to use standard wrapper methods that extract relevant numeric quantities from statistical models, such as the generic function `coef()` which can be used to extract point estimates from linear regression models or `parTable()` in `lavaan` or `omxGetParameters()`in the aforementioned `OpenMx` model.
+The output of the `summary()` function may be a good target for reproducibility checks because it often contains information about parameter estimates and fit statistics; however, in some cases (as with OpenMx models), it may again contain timing information, which will not exactly reproduce.
+Last, note that some algorithm are not expected to reproduce identically but up to a certain precision.
+This is relevant for algorithm that are fundamentally based on random numbers, such as Monte Carlo methods, bootstrap estimators and similar.
+In this cases, approximate reproducibility tests can be realized by individually adjusting the numeric precision of the tests (see option `reproducibleRchunks.digits` as previously described).
 
 # Discussion
 
