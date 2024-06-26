@@ -397,11 +397,12 @@ summary(factorFit1)
 Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error as fingerprints of the entire objects will differ.
 For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time elapsed when fitting the model. 
 Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1` run on OpenMx's demonstration dataset `demoOneFactor` including 500 observations on five numeric variables. 
-Among information relevant to reproducibility issues, its `output` attribute also contains timing variables `wallTime` and `cpuTime`, which will almost always lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility:
+Among information relevant to reproducibility issues, its `output` attribute also contains timing variables `wallTime` and `cpuTime` as well as a timestamp `timestamp`, which will almost always lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility.
+For illustration, here is the content of the `cpuTime` variable and the `timestump` variable for the aforementioned factor model, which was estimated when this manuscript was generated:
 
 ```{r eval=TRUE, echo=TRUE}
-cat(factorFit1$output$wallTime)
 cat(factorFit1$output$cpuTime)
+cat(factorFit1$output$timestamp)
 ```
 
 Thus, we generally recommend a checkpoint approach, in which reproducibility tests are used only at selected, meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (i.e., effect size point estimates, goodness-of-fit indices, standard error estimates, confidence intervals, test statistics, p values, Bayes factors, etc.).
@@ -415,7 +416,7 @@ The output of the `summary()` function may be a good target for reproducibility 
 Last, note that some algorithm are not expected to reproduce identically but up to a certain precision.
 This is relevant for algorithm that are fundamentally based on random numbers, such as Monte Carlo methods, bootstrap estimators and similar.
 In this cases, approximate reproducibility tests can be realized by individually adjusting the numeric precision of the tests (see option `reproducibleRchunks.digits` as previously described).
-Adepts of the tidyverse approach [@wickham2019welcome] are probably well advised to use functions `tidy()` and `glance()` from the `broom` [@broom] package, which will write parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan,smooth.spline, survfit, and others) into a consistent and easy accessible format (a so-called _tibble_), which lends itself for fingerprinting with our suggested approach.
+Friends of the tidyverse approach [@wickham2019welcome] are probably well advised to use functions `tidy()` and `glance()` from the `broom` [@broom] package, which will write parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan,smooth.spline, survfit, and others) into a consistent and easy accessible format (a so-called _tibble_), which lends itself for fingerprinting with our suggested approach.
 Here is a brief example of how the `broom` package formats the output of a linear regression model:
 
 ```{r echo=TRUE, eval=TRUE}
@@ -423,6 +424,8 @@ x <- rnorm(10)
 y <- rnorm(10)
 broom::tidy(lm(y~x))
 ```
+
+As a rule of thumb, we recommend to fingerprint the results of all parameter estimates from the `tidy()` function and all model fit statistics from the `glance()` function in a `reproducibleR` chunk. 
 
 # Discussion
 
@@ -438,7 +441,7 @@ In the following, we briefly discuss a few situations, in which threats to repro
   
 - Original computations were executed and stored in the JSON data file. Later, a reproduction attempt is made using the exact same R Markdown file but on a different computer. This is a classic case of non-reproducibility, which often is due to changes in the software packages and the R version the computations in the R Markdown rely upon [@epskamp2019reproducibility; @peikert2021reproducible]. Note that the goal of this package is not to guarantee reproducibility but to allow for automated testing and reporting of reproducibility. To increase the chances of reproducibility in the first place, various solutions exist [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac] of which a primary aspect is a way to document and recreate the original computational environment.
 
-- Some computations are executed and their results are stored in a JSON file as planned. Later on, someone changes the code in the R Markdown file, such that the results differ and a failure of reproduction is indicated. 
+- Some computations are executed and their original results are stored in a JSON file as planned. Later on, someone modifies the R code in the R Markdown file, such that the results differ and a failure of reproduction is indicated. This change of code between the original computation and the reproduction attempt is caught by the package because fingerprints of the entire code chunk syntax are stored. Users are informed by a warning in the reproducibility report. The package will still try to reproduce each result and give individual reports on successes and failures.
 
 - `R` is not available anymore. As with every fashion, some day `R` will be superseded by a future programming language and/or there will be no port of `R` or the `reproducibleRchunks` package to a future computing platform. Then, the JSON format will likely still allow the possibility to read out the original computational results in that future programming language as the JSON format itself is open and transparent. 
 
