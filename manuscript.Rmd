@@ -9,6 +9,8 @@ author:
     email         : "andreas.brandmaier@medicalschool-berlin.de"
     role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
       - "Conceptualization"
+      - "Methodology"
+      - "Software"
       - "Writing - Original Draft Preparation"
       - "Writing - Review & Editing"
 
@@ -18,6 +20,7 @@ author:
     email         : "peikert@mpib-berlin.mpg.de"
     role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
       - "Writing - Review & Editing"
+      - "Methodology"
             
 affiliation:
   - id            : "1"
