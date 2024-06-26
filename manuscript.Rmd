@@ -372,7 +372,7 @@ In particular, `eval=FALSE` suppressed execution of the code, `echo=FALSE` suppr
 In the following, we give recommendations on how to use the package in typical cases of statistical data analysis and reporting.
 It is possible to simply replace all classic `R` code chunks with `reproducibleR` code chunks.
 Then, all variables created in the process of a given data analysis will be tested for reproducibility.
-However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all results will perfectly reproduce.
+However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all results that researchers find meaningful will perfectly reproduce.
 
 ```{r eval=TRUE, include=FALSE}
 library(OpenMx)
@@ -394,6 +394,7 @@ factorModel1 <- mxModel(name="One Factor",
 factorFit1 <- mxRun(factorModel1)
 summary(factorFit1)
 ```
+
 Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error as fingerprints of the entire objects will differ.
 For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time elapsed when fitting the model. 
 Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1` run on OpenMx's demonstration dataset `demoOneFactor` including 500 observations on five numeric variables. 
@@ -407,10 +408,12 @@ cat(factorFit1$output$timestamp)
 
 Thus, we generally recommend a checkpoint approach, in which reproducibility tests are used only at selected, meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (i.e., effect size point estimates, goodness-of-fit indices, standard error estimates, confidence intervals, test statistics, p values, Bayes factors, etc.).
 Specifically, we recommend to use at least the following checkpoints:
+
 - data loading: check whether the loaded raw data are identical to the data loaded in the original analysis
 - preprocessing: check whether the preprocessed data (that is, after steps such as outlier removal, aggregation, filtering) are identical to the preprocessed data in the original analysis
 - results: check whether the results that are reported in text, tables, and figures are identical to the results of the original analysis.
 At the same time, avoid adding automated tests of entire statistical models but focus on the results.
+
 A convenient approach is to use standard wrapper methods that extract relevant numeric quantities from statistical models, such as the generic function `coef()` which can be used to extract point estimates from linear regression models or `parTable()` in `lavaan` or `omxGetParameters()`in the aforementioned `OpenMx` model.
 The output of the `summary()` function may be a good target for reproducibility checks because it often contains information about parameter estimates and fit statistics; however, in some cases (as with OpenMx models), it may again contain timing information, which will not exactly reproduce.
 Last, note that some algorithm are not expected to reproduce identically but up to a certain precision.
@@ -438,13 +441,9 @@ Templates can be used to customize the output and summary functions allow users 
 In the following, we briefly discuss a few situations, in which threats to reproducibility happened and explain how the package handles these situations by default:
 
 - Error `In get_engine(options$engine) :  Unknown language engine 'reproducibleR'` This error is shown if a R Markdown file is knitted and the `reproducibleRchunks` package was not loaded. Fix this by adding the statement `library(reproducibleRchunks)` in the first code chunk of the R Markdown document.
-  
 - Original computations were executed and stored in the JSON data file. Later, a reproduction attempt is made using the exact same R Markdown file but on a different computer. This is a classic case of non-reproducibility, which often is due to changes in the software packages and the R version the computations in the R Markdown rely upon [@epskamp2019reproducibility; @peikert2021reproducible]. Note that the goal of this package is not to guarantee reproducibility but to allow for automated testing and reporting of reproducibility. To increase the chances of reproducibility in the first place, various solutions exist [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac] of which a primary aspect is a way to document and recreate the original computational environment.
-
 - Some computations are executed and their original results are stored in a JSON file as planned. Later on, someone modifies the R code in the R Markdown file, such that the results differ and a failure of reproduction is indicated. This change of code between the original computation and the reproduction attempt is caught by the package because fingerprints of the entire code chunk syntax are stored. Users are informed by a warning in the reproducibility report. The package will still try to reproduce each result and give individual reports on successes and failures.
-
 - `R` is not available anymore. As with every fashion, some day `R` will be superseded by a future programming language and/or there will be no port of `R` or the `reproducibleRchunks` package to a future computing platform. Then, the JSON format will likely still allow the possibility to read out the original computational results in that future programming language as the JSON format itself is open and transparent. 
-
 - A future `R` version changes the way objects are serialized (that is, converted from the internal representation to a byte-stream representation, of which the fingerprint is taken). The version of the serialize protocol can be manually overwritten to an older version if newer versions should not be backward compatible. As long as the `digest` package is used for generating fingerprints, the serialization version can be fixed to the version that is used at the time of writing (2024) using this command: `options(serializeVersion=2)`.
 
 <!-- - The results of hash functions are generally not guaranteed to be stable over time. To trace back possible problems, -->
@@ -454,7 +453,7 @@ In the following, we briefly discuss a few situations, in which threats to repro
 In developing this package, we adhere to three major aspects of rigor in scientific software development [@brandmaier2024commentary]. 
 First, the package comes with a variety of formal tests (based on the `testthat` package, @testthat2011) to test correct functioning of the package.
 Second, we provide documentation in form of this manuscript and an online documentation ([https://github.com/brandmaier/reproducibleRchunks](https://github.com/brandmaier/reproducibleRchunks)). 
-Third, bug reports and feature requests can be submitted through our github project website. 
+Third, bug reports and feature requests can be submitted through our github project website.
 
 ### Storing and publishing reproducibility information
 
