@@ -34,8 +34,8 @@ authornote: |
 abstract: |
  Computational results are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research in digital environments.
  Various approaches have been suggested to increase chances of reproducibility.
- Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, presentation).
- However, a simple way to detect changes of these assets, i.e. irreproducibility, is still missing.
+ Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, or presentations).
+ However, a simple way to detect non-reproducibility, that is, unwanted changes in these assets over time is still missing.
  We introduce the R package `reproducibleRchunks`, which provides a new type of code chunk in R Markdown documents, which automatically stores meta data about original computational results and verifies later reproduction attempts.
  With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of digital research assets.
   
@@ -80,7 +80,7 @@ When ever the document is reproduced, all of its computer code chunks are execut
 This is particularly interesting for quantitative research reports, as  statistical results and contents of tables and figures can be dynamically generated. 
 Packages like `papaja` [@R-papaja] or `stargazer` [@R-stargazer] further extend R Markdown's capabilities to format documents (including tables and figures) in a specific journal style, such as APA style.
 Also, (R) Markdown forms the basis of _executable research articles_ [@tsang2020welcome], a browser-based form of research articles that allows authors to enrich their publications with interactive elements, such as figures or results that dynamically change based on readers' input.
-A particular advantage of using R Markdown for creating research reports is that it helps avoiding common threats to reproducibility of statistical results, first and foremost, copy&paste errors between results of a regular R script and a scientific report (e.g., a statistic or table in a Word document) [@peikert2021reproducible];
+A particular advantage of using R Markdown for creating research reports is that it helps avoiding common threats to reproducibility of statistical results, first and foremost, copy&paste errors between results of a regular R script and a scientific report (e.g., a reported statistic or table in a Word document) [@peikert2021reproducible];
 further, it is suitable to generate a variety of scientific assets other than manuscripts such as posters [@posterdown2019], presentations [@xaringan2022], resumés [@vitae2023] or preregistrations [@peikert2021reproducible] from the same Markdown language.
 
 
