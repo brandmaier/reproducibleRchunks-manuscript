@@ -73,6 +73,7 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed,
 ```
 
 Computational results, including those from statistical data analyses, are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and credible research in digital environments [@epskamp2019reproducibility; @hardwicke2018data].
+Surprisingly often, results from published raw data cannot be reproduced [@artner2021reproducibility].
  Various approaches have been suggested to increase chances of reproducibility of statistical data analyses in the R language [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac].
  Many approaches rely on R Markdown [@rmarkdown2023].
 R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, what are list elements) and computer code (R, python or others) in a single document [@xie2018r].
@@ -446,8 +447,6 @@ In the following, we briefly discuss a few situations, in which threats to repro
 - `R` is not available anymore. As with every fashion, some day `R` will be superseded by a future programming language and/or there will be no port of `R` or the `reproducibleRchunks` package to a future computing platform. Then, the JSON format will likely still allow the possibility to read out the original computational results in that future programming language as the JSON format itself is open and transparent. 
 - A future `R` version changes the way objects are serialized (that is, converted from the internal representation to a byte-stream representation, of which the fingerprint is taken). The version of the serialize protocol can be manually overwritten to an older version if newer versions should not be backward compatible. As long as the `digest` package is used for generating fingerprints, the serialization version can be fixed to the version that is used at the time of writing (2024) using this command: `options(serializeVersion=2)`.
 
-<!-- - The results of hash functions are generally not guaranteed to be stable over time. To trace back possible problems, -->
-
 ### Rigor in software development
 
 In developing this package, we adhere to three major aspects of rigor in scientific software development [@brandmaier2024commentary]. 
@@ -463,7 +462,9 @@ First, there may arise unwanted data protection issues when raw data is (acciden
 Second, the JSON format is inefficient in terms of storage space required.
 It is designed to be human-readable and conformable with versioning tools such as git.
 It is not meant for storing large data and will blow up file size by a considerable factor (while at the same time losing numerical precision).
-At the same time, ensuring that the data set identical to the one used in the original analysis was used, adding a check on the contents of a `data.frame`.
+At the same time, ensuring that the data set is identical to the one used in the original analysis was used is essential (see our previous suggestion for checkpoints in a data analysis); that is, raw data in a `data.frame` or similar R structure should be tested for reproducibility but only indirectly using fingerprints.
+Note that many fitted statistical models in R also contain raw data, such as (general) linear model fits from the `stats` or `lme4` package or structural equation model fits from the `lavaan` or `OpenMx` packages.
+Repeating our previous suggestion, we recommend to only subject parameter estimates and fit indices to the reproducibility checks but not variables containing fitted statistical models.
 
 ### Summary
 
