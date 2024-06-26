@@ -372,7 +372,7 @@ In particular, `eval=FALSE` suppressed execution of the code, `echo=FALSE` suppr
 In the following, we give recommendations on how to use the package in typical cases of statistical data analysis and reporting.
 It is possible to simply replace all classic `R` code chunks with `reproducibleR` code chunks.
 Then, all variables created in the process of a given data analysis will be tested for reproducibility.
-However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all results that researchers find meaningfull will perfectly reproduce.
+However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all results that researchers find meaningful will perfectly reproduce.
 
 ```{r eval=TRUE, include=FALSE}
 library(OpenMx)
