@@ -353,16 +353,18 @@ These formatting instructions can contain two placeholders, which the package wi
       html="<div style='border: 3px solid black; 
       padding: 10px 10px 10px 10px; 
       background-color: #EEEEEE;'>
-      <h5>${title}</h5>${content}</div>"))
+      <h5>${title}</h5>
+      ${content}</div>"))
 ```
 
-For example, the following code reformats the appearance of the code report in PDF documents, such that the report is enclosed by two horizontal lines (\\hr elements), the title is displayed as a section header, there is a medium skip between title and content and content is displayed in a smaller font size:
+For example, the following code reformats the appearance of the code report in PDF documents (via \LaTeX), such that the report is enclosed by two horizontal lines (\\hrulefill elements), the title is displayed as a section header, there is a medium skip between title and content and content is displayed in a small font size:
 
 ```{r echo=TRUE, eval=FALSE}
     options(reproducibleRchunks.templates = list(
-      pdf="\\hr \\section{${title}} 
-      \\medskip \\smaller 
-      ${content} \\hr"
+      latex="\\hrulefill \n \\section{${title}} 
+      \\medskip \\small 
+      ${content}\n \\hrulefill \n
+      ")
     )
 ```
 
