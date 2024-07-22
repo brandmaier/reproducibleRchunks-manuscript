@@ -9,6 +9,28 @@
     ]
   },
   "Packages": {
+    "BH": {
+      "Package": "BH",
+      "Version": "1.84.0-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a8235afbcd6316e6e91433ea47661013"
+    },
+    "MASS": {
+      "Package": "MASS",
+      "Version": "7.3-60.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "grDevices",
+        "graphics",
+        "methods",
+        "stats",
+        "utils"
+      ],
+      "Hash": "2f342c46163b0b54d7b64d1f798e2c78"
+    },
     "Matrix": {
       "Package": "Matrix",
       "Version": "1.7-0",
@@ -25,6 +47,28 @@
         "utils"
       ],
       "Hash": "1920b2f11133b12350024297d8a4ff4a"
+    },
+    "OpenMx": {
+      "Package": "OpenMx",
+      "Version": "2.21.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "BH",
+        "MASS",
+        "Matrix",
+        "R",
+        "Rcpp",
+        "RcppEigen",
+        "RcppParallel",
+        "StanHeaders",
+        "digest",
+        "lifecycle",
+        "methods",
+        "parallel",
+        "rpf"
+      ],
+      "Hash": "6362da44e762ec951a34fcb6bce60cac"
     },
     "R6": {
       "Package": "R6",
@@ -46,6 +90,41 @@
         "utils"
       ],
       "Hash": "5ea2700d21e038ace58269ecdbeb9ec0"
+    },
+    "RcppEigen": {
+      "Package": "RcppEigen",
+      "Version": "0.3.4.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "stats",
+        "utils"
+      ],
+      "Hash": "df49e3306f232ec28f1604e36a202847"
+    },
+    "RcppParallel": {
+      "Package": "RcppParallel",
+      "Version": "5.1.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "a45594a00f5dbb073d5ec9f48592a08a"
+    },
+    "StanHeaders": {
+      "Package": "StanHeaders",
+      "Version": "2.32.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "RcppEigen",
+        "RcppParallel"
+      ],
+      "Hash": "affbfba7203fd83b6594362f1355c25b"
     },
     "assertthat": {
       "Package": "assertthat",
@@ -164,6 +243,16 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5d8225445acb167abf7797de48b2ee3c"
+    },
+    "cpp11": {
+      "Package": "cpp11",
+      "Version": "0.4.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "5a295d7d963cc5035284dcdbaf334f4e"
     },
     "crayon": {
       "Package": "crayon",
@@ -505,6 +594,17 @@
       ],
       "Hash": "fec5f52652d60615fdb3957b3d74324a"
     },
+    "mvtnorm": {
+      "Package": "mvtnorm",
+      "Version": "1.2-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats"
+      ],
+      "Hash": "4d1891e59ac7a12b4e7e8a69349125f1"
+    },
     "papaja": {
       "Package": "papaja",
       "Version": "0.1.2",
@@ -667,6 +767,22 @@
         "utils"
       ],
       "Hash": "d2e1277195d221e6118d8a77dda2e877"
+    },
+    "rpf": {
+      "Package": "rpf",
+      "Version": "1.0.14",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "RcppEigen",
+        "lifecycle",
+        "methods",
+        "mvtnorm",
+        "parallel"
+      ],
+      "Hash": "c8298c4497dfc962c70c8d740744c9da"
     },
     "rprojroot": {
       "Package": "rprojroot",
