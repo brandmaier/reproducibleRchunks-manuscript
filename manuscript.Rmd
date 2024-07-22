@@ -30,10 +30,10 @@ affiliation:
   - id            : "3"
     institution   : "Max Planck UCL Centre for Computational Psychiatry and Ageing Research"
 
-note: Preprint submitted for publication
+#note: Preprint submitted for publication
 
 authornote: |
-  Please address correspondence to: Prof. Dr. Andreas M. Brandmaier, Rüdesheimerstr. 50, 14197 Berlin, Germany. Email: andreas.brandmaier@medicalschool-berlin.de.
+  Please address correspondence to: Andreas M. Brandmaier, Lentzeallee 94, 14195 Berlin, Germany. Email: brandmaier@mpib-berlin.mpg.de.
   The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript. We thank Leonie Hagitte for providing comments on an earlier version of the manuscript.
 
 abstract: |
