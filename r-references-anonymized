@@ -28,7 +28,6 @@ eprint = {
 
 }
 
-
 @Manual{R-base,
   title = {R: A Language and Environment for Statistical Computing},
   author = {{R Core Team}},
@@ -148,9 +147,9 @@ eprint = {https://royalsocietypublishing.org/doi/pdf/10.1098/rsos.180448}
 }
 @Manual{R-reproducibleRchunks,
   title = {reproducibleRchunks: Automated reproducibility checks for R Markdown documents},
-  author = {{Andreas M. Brandmaier}},
+  author = {{ANONYMYZED FOR PEER-REVIEW}},
   note = {R package version 0.2},
-  url = {https://github.com/brandmaier/reproducibleRchunks}
+  url = {{ANONYMYZED FOR PEER-REVIEW}}
 }
 
 @article{vuorre2021sharing,
