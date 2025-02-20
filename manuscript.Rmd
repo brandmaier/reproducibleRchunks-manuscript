@@ -117,7 +117,7 @@ The ´reproducibleRchunks` package addresses the challenge of ensuring computati
 This means verifying whether the same script with the same data yields identical results, even on different computers or at later times, with minimal disruption to users' workflows.
 This article is intended for readers who use R for statistical analyses and ideally already had some experience with R Markdown. 
 We aim to first offer a less technical tutorial outlining a typical use case for the package. 
-Following this, we provide more detailed technical descriptions of the package's mechanics and various ways to customize its behavior.
+Following this, we provide more detailed technical background information about the package and various ways to customize its behavior.
 We believe that the package can be used effectively without a deep understanding of the technical details. 
 However, gaining insight into these details may enhance the user experience and help readers understand the challenges involved in ensuring reproducibility.
 
@@ -148,7 +148,7 @@ library(reproducibleRchunks)
 ```
 
 On load, the package registers a new type of code chunk called `reproducibleR`.
-Figure \@ref(fig:rstudioscreen1) shows a snippet from an R Markdown file, in which there is a `reproducibleR` chunk with the name _addition_. 
+Figure \@ref(fig:rstudioscreen1) shows a snippet from an R Markdown file, in which there is a `reproducibleR` chunk with the name _addition_. The entire tutorial file can be found in the R package in sub directory "inst/examples_simple_demo" or can be downloaded from \url{https://github.com/brandmaier/reproducibleRchunks/tree/main/inst/examples/simple_demo}.
 In the chunk, a new variable `my_sum` is declared and defined to be the sum of some variable `x` plus one. 
 Variable `x` was declared in an earlier code chunk (not shown in the figure) and is thus not subject to the reproducibility test of this chunk. 
 
@@ -174,7 +174,7 @@ knitr::include_graphics("img/generation-step2.png")
 
 ```
 
-If the document is reproducedj and the computational result differs from the original result, this failure to reproduce is noted in the reproducibility report.
+If the document is reproduced and the computational result differs from the original result, this failure to reproduce is noted in the reproducibility report.
 In a variation of the previous example, we assume someone changed the value of `x`, then variable `my_sum` would change and the a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
 
 ```{r rstudioscreen4, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and the reproduction of a variable failed.", fig.pos="b"}
@@ -182,7 +182,7 @@ knitr::include_graphics("img/generation-step2-failed.png")
 
 ```
 
-Ideally, the reproducibility metadata files are always kept together with the original Markdown file. For example, when providing Open Code on open platforms, the repository should contain both the Markdown files as well as the metadata files. Note that the metadata file format is particularly suitable to be used with version control systems [see @peikert2021reproducible].
+Ideally, the reproducibility metadata files are always kept together with the original Markdown file. For example, when providing Open Code on open platforms, the repository should contain both the Markdown files as well as the metadata files. Note that the metadata file format is particularly suitable to be used with version control systems [see @peikert2021reproducible]. If users intentionally modify R code later, e.g., because they want to fix an error, then the metadata files would need to be deleted and recreated. Version control can help users in documenting such changes.
 
 # Methods
 
@@ -230,7 +230,8 @@ As default, we chose the SHA256 algorithm, which allows us to map any content of
 The following shows the SHA256-fingerprint of the content of variable `numbers` from the previous example:
 \begin{verbatim}
 ```{r echo=FALSE, eval=TRUE, results="asis"}
-content <- jsonlite::serializeJSON(digest::digest(numbers,algo = "sha256"),pretty=TRUE)
+#content <- jsonlite::serializeJSON(digest::digest(numbers,algo = "sha256"),pretty=TRUE)
+content <- digest::digest(numbers,algo = "sha256")
 content <- gsub(pattern="\\n",replacement="  \n", x=content)
 cat(content)
 ```
@@ -240,7 +241,8 @@ And the following example is a SHA256 fingerprint of the first chapter of Genesi
 ```{r echo=FALSE, eval=TRUE, results="asis"}
 library(logos)
 genesis <- select_passage("Genesis",chapter = 1, language = "English", testament = "old")
-content <- jsonlite::serializeJSON(digest::digest(genesis,algo = "sha256"),pretty=TRUE)
+#content <- jsonlite::serializeJSON(digest::digest(genesis,algo = "sha256"),pretty=TRUE)
+content <- digest::digest(genesis,algo = "sha256")
 content <- gsub(pattern="\\n",replacement="  \n", x=content)
 cat(content)
 ```
