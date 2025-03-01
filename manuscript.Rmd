@@ -218,16 +218,16 @@ cat(content)
 ```
 \end{verbatim}
 
-The JSON format has a clear, formal structure, which allows easy parsing of the information both for computers and humans. 
-Without going into detail, for each object, its type (e.g., character, integer, list, or class), its value and its attributes are stored. The stored values themselves values  can in turn consist of collections of objects (e.g., lists of lists); in this way, arbitrarily complex R objects (such as an entire regression model) can be represented.
-For privacy reasons and to save disk space, we actually do not store the raw data by default.
-Instead, we store "fingerprints" of the data.
-Digital fingerprints are fixed-length representations of an arbitrarily large digital object.
-They are generated such that small changes in the input object will lead to different fingerprints and, thus, they are ideally suited to verify integrity of the original data.
-The idea is very similar to a check sum digit in a credit card number, which can be computed from the remaining digits to check whether the credit card number is valid.
-Fingerprints are realized via one-way hash functions, which can take an arbitrary large digital object and map it onto a fixed-size object, which is typically displayed as hexadecimal string.
-As default, we chose the SHA256 algorithm, which allows us to map any content of a variable in R to a 256 bit-long fingerprint or "hash", which is usually displayed using 64 hexadecimal characters.
-The following shows the SHA256-fingerprint of the content of variable `numbers` from the previous example:
+The JSON format has a clear, formal structure, which allows easy parsing of the information both for computers and humans, which can ease "forensics" in case reproduction fails.
+Such forensic investigation is further facilitated, the package also stores the code syntax.
+While JSON can represent arbitrarily complex R objects (such as an entire regression model), we opted to not store all computational results by default but only their "fingerprints".
+Using the fingerprint, we can determine if an object has changed without storing the object itself.
+This strategy avoids accidental leakage of potentially sensitive data and reduces storage demands.
+Fingerprints are realized via so-called one-way hash functions (we use the SHA256 algorythm by default), which can take an arbitrary large digital object and map it onto a fixed-size object, which is typically displayed as hexadecimal string.
+<!---AP: I think this section could be removed: start--->
+Fingerprints allow for an efficient comparison of identity of results while avoiding data security and privacy issues as they do not allow to reproduce the original data.
+The following shows how the information about variable `numbers` is stored using a SHA256-fingerprint (which is a 256 bit-long fingerprint that is usually displayed using 64 hexadecimal characters):
+
 \begin{verbatim}
 ```{r echo=FALSE, eval=TRUE, results="asis"}
 #content <- jsonlite::serializeJSON(digest::digest(numbers,algo = "sha256"),pretty=TRUE)
@@ -256,6 +256,9 @@ Due to their small size, fingerprints allow for an efficient comparison of ident
 
 In addition to the contents of all newly declared variables in a `reproducibleR`-chunk, the package also stores a fingerprint of the code syntax.
 This allows later checks whether a potential non-reproduction is due to a modification of the code chunk since the original computation.
+
+<!---AP: I think this section could be removed: end--->
+
 The storage of the fingerprinted information about a code chunk and its computational results is illustrated in the schematic in Figure \@ref(fig:jsonschema).
 
 ```{r jsonschema, fig.cap="A JSON file stores fingerprints of all newly declared variables in a reproducibleR-chunk as well as fingerprints of the code chunk syntax. This image by Andreas Brandmaier and Anke Schneider is licensed under [CC BY 4.0]( https://creativecommons.org/licenses/by/4.0/)"}
@@ -279,6 +282,16 @@ That is, all of the following variables (`x` of class _integer_, `y` of class _c
   z <- lm(x~1, method=y)
   lst <- list(x, y, z)
 ```
+
+<!---I think this is sound advice and should be kept--->
+Yet, we recommend subjecting simple objects to reproducibility checks, that is, preferably numeric variables such as single numbers or vectors of numbers. 
+In a typical statistical data analysis this would correspond to, for example, parameter estimates, effect size estimates, confidence interval limits, p values, fit indices, or Bayes factors.
+Using exact comparisons for testing complex object identity is sometimes more restrictive than one would expect.
+Complex objects (like the fit objects of statistical models, or plots), often contain information that changes on each run, like time stamps, surprising randomness, numerical instability etc. which makes the object technically not identical but would rarely count as irreproducible.
+Another complication is numeric comparisons. 
+For example results of numeric computations may be logically equivalent but not bitwise equivalent; in numeric representations, there is sometimes a bit reserved for the sign of a number, thus it can be possible to have -0 and +0, which both are exactly zero in a decimal representation but the binary representations differ.
+Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit).
+To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, eight digits) but this mechanism only works for plain numbers/matrices and possible not for complex composite objects.
 
 ## Tutorial
 
