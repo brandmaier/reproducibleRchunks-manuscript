@@ -33,7 +33,7 @@ affiliation:
 #note: Preprint submitted for publication
 
 authornote: |
-  Please address correspondence to: Andreas M. Brandmaier, Lentzeallee 94, 14195 Berlin, Germany. Email: brandmaier@mpib-berlin.mpg.de.
+  Please address correspondence to: Andreas M. Brandmaier, Rüdesheimer Str. 50, 14197 Berlin, Germany. Email: andreas.brandmaier@medicalschool-berlin.de.
   The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript. We thank Leonie Hagitte for providing comments on an earlier version of the manuscript.
 
 abstract: |
@@ -100,13 +100,13 @@ Computational results, including those from statistical data analyses, are consi
 Surprisingly often, results from published raw data cannot be reproduced [@artner2021reproducibility].
  Various approaches have been suggested to increase chances of reproducibility of statistical data analyses in the R language [@peikert2021reproducible; @renv2022; @chan2023rang; @nagraj2023pracpac].
  Many approaches rely on R Markdown [@rmarkdown2023].
-R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, what are list elements) and computer code (R, Python or others) in a single document [@xie2018r].
+R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, or what are list elements) and computer code (R, Python, or others) in a single document [@xie2018r].
 Whenever an R Markdown document is reproduced, all of its computer code chunks are executed, which allows for the generation of dynamic content in the document.
 This is particularly interesting for quantitative research reports, as  statistical results and contents of tables and figures can be dynamically generated.
-Packages like `papaja` [@R-papaja] or `stargazer` [@R-stargazer] further extend R Markdown's capabilities to format documents (including tables, figures, and statistical results) in a standardized style, such as APA style.
-As one example, (R) Markdown forms the basis of _executable research articles_ [@tsang2020welcome], a browser-based form of research articles that allows authors to enrich their publications with interactive elements, such as figures or results that dynamically change based on readers' input.
+Packages like `papaja` [@R-papaja] or `stargazer` [@R-stargazer] further extend R Markdown's capabilities to format documents (including tables, figures, and statistical results) in a standardized style, such as APA style [@apa].
+As another example, (R) Markdown also forms the basis of _executable research articles_ [@tsang2020welcome], a browser-based form of research articles that allows authors to enrich their publications with interactive elements, such as figures or results that dynamically change based on readers' input.
 A particular advantage of using R Markdown for creating research reports is that it helps avoiding common threats to reproducibility of statistical results, first and foremost, copy&paste errors, which happen when results of a regular R script and a scientific report (e.g., a reported statistic or table in a Word document) mismatch by mistake [@peikert2021reproducible];
-further, R Markdown is suitable to generate a variety of scientific assets other than manuscripts such as posters [@posterdown2019], presentations [@xaringan2022], resumés [@vitae2023] or preregistrations [@peikert2021reproducible] from the same Markdown language.
+further, R Markdown is versatile enough to generate a variety of scientific assets beyond manuscripts, including posters [@posterdown2019], presentations [@xaringan2022], resumés [@vitae2023] or preregistrations [@peikert2021reproducible], all using the same Markdown approach.
 
 When computations are repeated later in time with the goal of reproducing results computed earlier, it is hard and laborious to check whether results are identical or not. 
 A typical case, in which verification of results is relevant, would be that readers or reviewers download open data and open code accompanying a manuscript and attempt to re-run the code on their computer. 
@@ -126,12 +126,12 @@ For users already familiar with R Markdown, only two modifications are needed wh
 1. Load the reproducibleRchunk package in the first code chunk of your document
 2. Change the code chunk type from `r` to `reproducibleR` for each code chunk that requires automatic verification in the future.
 In `reproducibleR` chunks, all newly declared variables are automatically identified and their contents are stored in a metadata file. 
-Furthermore, information about the code chunk itself (that is, the code syntax) is also stored, such that later non-reproduction can be traced back to either changes of the code chunk or changes of the computation.
+Furthermore, information about the code chunk itself (that is, the code syntax) is also stored, such that later non-reproduction can be traced back to either changes of the code chunk or changes of the computational results.
 Once a document is reproduced, all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
 Successes and failures of the reproduction attempts are displayed in a reproducibility report for each chunk.
 Customizations or suppression of these reports are possible as we will demonstrate later.
 A straightforward way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown language for generating a publishable document from a Markdown source file] Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
-Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over the stages of a data analysis or any other computation that should be checked for reproducibility. 
+Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over what should be tested for reproducibility and at what stages during the data analysis.
 This allows for forensic examination of non-reproducibility; for example, finding out whether the non-reproducibility is due to changes in the data file, due to the data cleaning or the estimation of a statistical model. 
 Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given statistical data analysis (or any other computation).
 Also, not all elements of a research asset may be required to reproduce (such as the current date displayed in a presentation of results).
@@ -175,7 +175,7 @@ knitr::include_graphics("img/generation-step2.png")
 ```
 
 If the document is reproduced and the computational result differs from the original result, this failure to reproduce is noted in the reproducibility report.
-In a variation of the previous example, we assume someone changed the value of `x`, then variable `my_sum` would change and the a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
+In a variation of the previous example, we assume someone changed the value of `x`, then variable `my_sum` would change and a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
 
 ```{r rstudioscreen4, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and the reproduction of a variable failed.", fig.pos="b"}
 knitr::include_graphics("img/generation-step2-failed.png")
@@ -207,7 +207,7 @@ set.seed(42)
 numbers <- sample(1:10, 5)
 ```
 
-This vector can be serialized in raw format to a JSON format as follows:
+This vector is serialized in raw format to a JSON format as follows:
 
 
 \begin{verbatim}
@@ -218,16 +218,14 @@ cat(content)
 ```
 \end{verbatim}
 
-The JSON format has a clear, formal structure, which allows easy parsing of the information both for computers and humans, which can ease "forensics" in case reproduction fails.
-Such forensic investigation is further facilitated, the package also stores the code syntax.
+The JSON format has a clear, formal structure that facilitates parsing of information for both computers and humans.
+This accessibility can ease forensics if reproduction issues arise.
+To further aid forensic investigation, the package also stores information about the code syntax used to generate an object.
 While JSON can represent arbitrarily complex R objects (such as an entire regression model), we opted to not store all computational results by default but only their "fingerprints".
 Using the fingerprint, we can determine if an object has changed without storing the object itself.
 This strategy avoids accidental leakage of potentially sensitive data and reduces storage demands.
 Fingerprints are realized via so-called one-way hash functions (we use the SHA256 algorythm by default), which can take an arbitrary large digital object and map it onto a fixed-size object, which is typically displayed as hexadecimal string.
-<!---AP: I think this section could be removed: start--->
-Fingerprints allow for an efficient comparison of identity of results while avoiding data security and privacy issues as they do not allow to reproduce the original data.
 The following shows how the information about variable `numbers` is stored using a SHA256-fingerprint (which is a 256 bit-long fingerprint that is usually displayed using 64 hexadecimal characters):
-
 \begin{verbatim}
 ```{r echo=FALSE, eval=TRUE, results="asis"}
 #content <- jsonlite::serializeJSON(digest::digest(numbers,algo = "sha256"),pretty=TRUE)
@@ -236,29 +234,6 @@ content <- gsub(pattern="\\n",replacement="  \n", x=content)
 cat(content)
 ```
 \end{verbatim}
-And the following example is a SHA256 fingerprint of the first chapter of Genesis from the Old Testament:
-\begin{verbatim}
-```{r echo=FALSE, eval=TRUE, results="asis"}
-library(logos)
-genesis <- select_passage("Genesis",chapter = 1, language = "English", testament = "old")
-#content <- jsonlite::serializeJSON(digest::digest(genesis,algo = "sha256"),pretty=TRUE)
-content <- digest::digest(genesis,algo = "sha256")
-content <- gsub(pattern="\\n",replacement="  \n", x=content)
-cat(content)
-```
-\end{verbatim}
-Note that these exemplary fingerprints have the same length despite both variables having different variable types and sizes.
-Due to their small size, fingerprints allow for an efficient comparison of identity of results while avoiding data security and privacy issues as they do not allow the original objects to be reproduced.
-
-
-
-
-
-In addition to the contents of all newly declared variables in a `reproducibleR`-chunk, the package also stores a fingerprint of the code syntax.
-This allows later checks whether a potential non-reproduction is due to a modification of the code chunk since the original computation.
-
-<!---AP: I think this section could be removed: end--->
-
 The storage of the fingerprinted information about a code chunk and its computational results is illustrated in the schematic in Figure \@ref(fig:jsonschema).
 
 ```{r jsonschema, fig.cap="A JSON file stores fingerprints of all newly declared variables in a reproducibleR-chunk as well as fingerprints of the code chunk syntax. This image by Andreas Brandmaier and Anke Schneider is licensed under [CC BY 4.0]( https://creativecommons.org/licenses/by/4.0/)"}
@@ -273,7 +248,7 @@ Identicality of original and reproduced results is checked with the `all.equal()
 ### Types of objects
 
 In principle, any R object is suitable for reproducibility testing no matter how complex.
-For creating fingerprints, the package uses R's serialization methods, which take any R object as input.
+For creating fingerprints, the package uses R's serialization methods, which take any R object as input and prepares it for storage.
 That is, all of the following variables (`x` of class _integer_, `y` of class _character_, `z` of class _lm_, and `lst` of class _list_) are valid examples for the automated reproducibility checks:
 
 ```{r examples, eval=FALSE, echo=TRUE}
@@ -283,15 +258,6 @@ That is, all of the following variables (`x` of class _integer_, `y` of class _c
   lst <- list(x, y, z)
 ```
 
-<!---I think this is sound advice and should be kept--->
-Yet, we recommend subjecting simple objects to reproducibility checks, that is, preferably numeric variables such as single numbers or vectors of numbers. 
-In a typical statistical data analysis this would correspond to, for example, parameter estimates, effect size estimates, confidence interval limits, p values, fit indices, or Bayes factors.
-Using exact comparisons for testing complex object identity is sometimes more restrictive than one would expect.
-Complex objects (like the fit objects of statistical models, or plots), often contain information that changes on each run, like time stamps, surprising randomness, numerical instability etc. which makes the object technically not identical but would rarely count as irreproducible.
-Another complication is numeric comparisons. 
-For example results of numeric computations may be logically equivalent but not bitwise equivalent; in numeric representations, there is sometimes a bit reserved for the sign of a number, thus it can be possible to have -0 and +0, which both are exactly zero in a decimal representation but the binary representations differ.
-Numeric representations may also differ up to a given numeric precision, for example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit).
-To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, eight digits) but this mechanism only works for plain numbers/matrices and possible not for complex composite objects.
 
 ## Tutorial
 
@@ -309,7 +275,7 @@ The name of the file will contain the label name (in this example `helloworld`).
 The following code block contains two reproducible results stored in variables `x` and `y`. 
 Those computations can be based on results computed in previous chunks but those variables will not per se be subject to the reproducibility tests.
 If the R markdown document is rendered a second time, the computational results are recomputed and compared against the original results. 
-For each result, success or failure or reproduction is reported separately.
+For each result, success or failure of reproduction is reported separately.
 
 ````markdown
 `r ''````{reproducibleR helloworld, echo=TRUE, eval=TRUE}
@@ -345,7 +311,7 @@ Some default behaviors of the package can be changed via R `options()`. The pack
 : Boolean. Indicates whether fingerprints should be used (default) or raw values should be stored.
 
 `reproducibleRchunks.hashing_algorithm`
-: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the algorithm offered by the `digest` package are used.
+: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the algorithms offered by the `digest` package are used.
 
 `reproducibleRchunks.templates`
 : A list with keys corresponding to pandoc output formats and values to templates for formatting the reproducibility reports. See below for more details.
@@ -354,7 +320,7 @@ Some default behaviors of the package can be changed via R `options()`. The pack
 : This is the prefix for the file containing reproducibility information. The filename will always contain the name of the R Markdown file and the chunk name separated by an underscore. The default prefix is `.repro`.
 
 Here are a few examples how these options can be changed.
-First, it is possible to change the precision with which numeric results are stored. By default, this is up to 8 digits. The following line reduces the precision to only four digits after the decimal point:
+First, it is possible to change the precision with which numeric results are stored. By default, this is up to 10 digits. The following line reduces the precision to only four digits after the decimal point:
 
 ```{r eval=FALSE, echo=TRUE}
 options(reproducibleRchunks.digits = 4)
@@ -380,7 +346,7 @@ There are various hashing functions available, which have different features.
 They generally differ along three dimensions: speed, chance of collisions, and security.
 Generally, hashing functions should map objects of arbitrary size to a fixed-size alphanumeric string.
 In this application, the choice of algorithm is not overly crucial.
-Supported algorithm (through the digest package, @digest2022) are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash and blake3. 
+Supported algorithm [provided by the digest package, @digest2022] are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash and blake3. 
 To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint but comes in cost of some speed (`sha256` of a vector of `r numbers_in_simulation` numbers takes `r mean_time_s` seconds on our standard computers).
 We believe that in most cases, the speed factor will be irrelevant but it could become an issue when very large objects (e.g., entire neuroimaging data sets) are fingerprinted.
 In that case, users either have to use a faster fingerprinting algorithm or forego fingerprinting raw data and instead fingerprint intermediate or final results only.
@@ -437,7 +403,7 @@ In particular, `eval=FALSE` suppressed execution of the code, `echo=FALSE` suppr
 In the following, we give recommendations on how to use the package in typical cases of statistical data analysis and reporting.
 A simple way to start is to replace all classic `R` code chunks with `reproducibleR` code chunks.
 Then, all variables created in the process of a given data analysis will be tested for reproducibility.
-However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all results that researchers find meaningful will perfectly reproduce.
+However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all statistical results that researchers find meaningful will perfectly reproduce.
 
 ```{r eval=TRUE, include=FALSE}
 library(OpenMx)
@@ -460,10 +426,10 @@ factorFit1 <- mxRun(factorModel1)
 summary(factorFit1)
 ```
 
-Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error as fingerprints of the entire objects will differ.
+Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error.
 For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time elapsed when fitting the model. 
 Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1` run on OpenMx's demonstration dataset `demoOneFactor` including 500 observations on five numeric variables. 
-Among information relevant to reproducibility issues, its `output` attribute also contains timing variables `wallTime` and `cpuTime` as well as a timestamp `timestamp`, which will almost always lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility.
+Among information relevant to reproducibility issues, its `output` attribute also contains timing variables `wallTime` and `cpuTime` as well as a timestamp `timestamp`, which will lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility.
 For illustration, here is the content of the `cpuTime` variable and the `timestamp` variable for the aforementioned factor model, which was estimated when this manuscript was generated:
 
 ```{r eval=TRUE, echo=TRUE}
