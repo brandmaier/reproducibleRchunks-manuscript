@@ -113,7 +113,7 @@ A typical case, in which verification of results is relevant, would be that read
 In order to test whether these open materials reproduced, they would have to manually compare the newly computed results with the published manuscript -- and, often, it would not be immediately clear which results mapped to what parts of the manuscript. 
 And even with dynamically-generated R Markdown documents, there is no straightforward way of checking reproducibility in an automated way.
 
-The ´reproducibleRchunks` package addresses the challenge of ensuring computational results in R Markdown documents are automatically testable for successful reproduction. 
+The `reproducibleRchunks` package addresses the challenge of ensuring computational results in R Markdown documents are automatically testable for successful reproduction. 
 This means verifying whether the same script with the same data yields identical results, even on different computers or at later times, with minimal disruption to users' workflows.
 This article is intended for readers who use R for statistical analyses and ideally already had some experience with R Markdown. 
 We aim to first offer a less technical tutorial outlining a typical use case for the package. 
@@ -152,11 +152,11 @@ Figure \@ref(fig:rstudioscreen1) shows a snippet from an R Markdown file, in whi
 In the chunk, a new variable `my_sum` is declared and defined to be the sum of some variable `x` plus one. 
 Variable `x` was declared in an earlier code chunk (not shown in the figure) and is thus not subject to the reproducibility test of this chunk. 
 
-```{r rstudioscreen1, fig.cap="Automated testing of variables for reproducibility is initiated by using code chunks of type `reproducibleR` (see yellow highlight) instead of `R` as shown in this example R Markdown snippet. "}
+```{r rstudioscreen1, fig.cap="Automated testing of variables for reproducibility is initiated by using code chunks of type `reproducibleR` (see yellow highlight)"}
 knitr::include_graphics("img/rstudio-screenshot-marker2.png")
 ```
 
-```{r rstudioscreen2, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is generated for the first time."}
+```{r rstudioscreen2, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report of a code chunk when a document is generated for the first time."}
 knitr::include_graphics("img/generation-step1.png")
 ```
 
@@ -169,7 +169,7 @@ The reproducibility report will then detail the success of each reproduction att
 In our example, the computation was successfully reproduced.
 A snippet from the resulting generated document is displayed in Figure \@ref(fig:rstudioscreen3).
 
-```{r rstudioscreen3, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and a variable is successfully reproduced."}
+```{r rstudioscreen3, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report of a code chunk when a document is re-generated and a result is successfully reproduced."}
 knitr::include_graphics("img/generation-step2.png")
 
 ```
@@ -177,7 +177,7 @@ knitr::include_graphics("img/generation-step2.png")
 If the document is reproduced and the computational result differs from the original result, this failure to reproduce is noted in the reproducibility report.
 In a variation of the previous example, we assume someone changed the value of `x`, then variable `my_sum` would change and a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
 
-```{r rstudioscreen4, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and the reproduction of a variable failed.", fig.pos="b"}
+```{r rstudioscreen4, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and the reproduction of a result failed.", fig.pos="b"}
 knitr::include_graphics("img/generation-step2-failed.png")
 
 ```
@@ -482,7 +482,7 @@ In the following, we briefly discuss a few future situations, in which threats t
 - The metadata files get lost. Without metadata files, no automated reproducibility check can be made. In this case, it may be a good idea to rerun the analysis in a computing environment as close as possible to the original computing environment and store the newly generated metadata files. It is advisable to manually compare the recreated results to some original reference (e.g., a report or published article) for consistency. 
 - The `reproducibleRchunks` package is not available anymore. In this case, all R Markdown code chunks of type `reproducibleR` can be renamed to `R` and the manuscript will at least render even though without automated reproducibility checks. If there is a large number of code chunks, the following line of code can be inserted in the Markdown document in the very first code chunk, which will tell knitr to render all `reproducibleR` chunks as regular R chunks without the need to rename the chunks: `R knitr::knit_engines$set(reproducibleR = knitr::knit_engines$get("R")`.
 - `R` is not available anymore. Some day `R` may be superseded by a future programming language and/or there will be no port of `R` or the `reproducibleRchunks` package to a future computing platform. Then, the JSON format will likely still allow the possibility to read out the original computational results in that future programming language as the JSON format itself is open and transparent. 
-- A future `R` version changes the way objects are serialized (that is, converted from the internal representation to a byte-stream representation, of which the fingerprint is taken). The metadata contains information about the R version used to generate the metadata, so future versions of our package could easily be adapted to this change. As long as the `digest` package is used for generating fingerprints, the serialization version can be fixed to the version that is used at the time of writing (2024) using this command: `options(serializeVersion=2)`.
+- A future `R` version changes the way objects are serialized (that is, converted from the internal representation to a byte-stream representation, of which the fingerprint is taken). The metadata contains information about the R version used to generate the metadata, so future versions of our package could easily be adapted to this change. As long as the `digest` package is used for generating fingerprints, the serialization version can be fixed to the version that is used at the time of writing (2025) using this command: `options(serializeVersion=2)`.
 
 ### Rigor in software development
 
