@@ -305,19 +305,19 @@ knitr::opts_chunk$set(report = FALSE)
 Some default behaviors of the package can be changed via R `options()`. The package defines the following options:
 
 `reproducibleRchunks.digits`
-: This is the number of digits for rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $10$.
+: This is the number of digits for the rounding of numbers and controls the numeric precision of the reproducibility checks. By default, this is $10$.
 
 `reproducibleRchunks.filetype`
-: This is the type of data storage. Currently, we only support the 'json' format; however, this leaves room for other formats to be supported in future. 
+: This is the type of data storage. Currently, we only support the JSON format; however, this leaves room for other formats to be supported in future. By default, this is 'json'.
 
 `reproducibleRchunks.hashing`
 : Boolean. Indicates whether fingerprints should be used (default) or raw values should be stored.
 
 `reproducibleRchunks.hashing_algorithm`
-: This is the hashing algorithm, which is used to generate fingerprints of variable contents. By default, the algorithms offered by the `digest` package are used.
+: This is the hashing algorithm that is used to generate fingerprints of variable contents. By default, the algorithms offered by the `digest` package are used.
 
 `reproducibleRchunks.templates`
-: A list with keys corresponding to pandoc output formats and values to templates for formatting the reproducibility reports. See below for more details.
+: A list with keys corresponding to pandoc output formats and values corresponding to templates for formatting the reproducibility reports. See below for more details.
 
 `reproducibleRchunks.prefix`
 : This is the prefix for the file containing reproducibility information. The filename will always contain the name of the R Markdown file and the chunk name separated by an underscore. The default prefix is `.repro`.
@@ -345,35 +345,35 @@ benchmark <- microbenchmark::microbenchmark(digest::sha1(numbers), unit = "secon
 mean_time_s <- summary(benchmark)$mean
 ```
 
-There are various hashing functions available, which have different features.
+There are various hashing functions with different features available.
 They generally differ along three dimensions: speed, chance of collisions, and security.
 Generally, hashing functions should map objects of arbitrary size to a fixed-size alphanumeric string.
 In this application, the choice of algorithm is not overly crucial.
-Supported algorithm [provided by the digest package, @digest2022] are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash and blake3. 
-To reduce chance of collisions, the package defaults to `sha256` which results in fingerprints of 64 hexadecimal characters, which corresponds to a 256-bit fingerprint but comes in cost of some speed (`sha256` of a vector of `r numbers_in_simulation` numbers takes `r mean_time_s` seconds on our standard computers).
+Supported algorithm [provided by the digest package, @digest2022] are sha1, crc32, sha256, sha512, xxhash32, xxhash64, murmur32, spookyhash, and blake3. 
+To reduce chance of collisions, the package defaults to `sha256`, which results in fingerprints of 64 hexadecimal characters that corresponds to a 256-bit fingerprint, but comes at the cost of some speed (`sha256` of a vector of `r numbers_in_simulation` numbers still takes only `r mean_time_s` seconds on our standard computers).
 We believe that in most cases, the speed factor will be irrelevant but it could become an issue when very large objects (e.g., entire neuroimaging data sets) are fingerprinted.
-In that case, users either have to use a faster fingerprinting algorithm or forego fingerprinting raw data and instead fingerprint intermediate or final results only.
+In that case, users either have to use a faster fingerprinting algorithm or forego the fingerprinting of raw data and fingerprint intermediate or final results only instead.
 
 ```{r eval=FALSE, echo=TRUE}
 options(reproducibleRchunks.hashing_algorithm = "sha256")
 ```
 
 Note that these options can be chosen differently for each chunk.
-That is, it is possible, to use fingerprints for storing results of one chunk and plain data storage for results of another chunk.
+That is, it is possible to use fingerprints to store results of one chunk and plain data storage for results of another chunk.
 
 ### Customization
 
 Last, users of this package can customize the appearance of the reproducibility reports. 
-This can be done by either using convenient template layouts, which can be tailored to each specific (pandoc) output format, that is, for example a template for HTML file and a different LaTeX template for PDF files. 
-Or, users can obtain a summary of the reproduction status of every variable in every chunk. 
-This information is returned by function `get_reproducibility_summary()` which returns a `data.frame` with three columns. 
+This can be done by either using convenient template layouts, which can be tailored to each specific (pandoc) output format, for example a template for HTML files and a different LaTeX template for PDF files. 
+Alternatively, users can obtain a summary of the reproduction status of every variable in every chunk. 
+This information is provided by the function `get_reproducibility_summary()`, which returns a `data.frame` with three columns. 
 The first column contains the name of the code chunk, the second column contains a variable name, and the third column contains a boolean variable representing whether the reproduction was a success. 
 This information can be used to either generate custom reports, such as one general report at the very end of the document, or write reports to a separate file.
 The alternative is to just use the default reports that are appended to each code chunk output (as shown in the previous examples). 
 Here, users cannot change the content but have some degrees of freedom in styling the output.
 The option `reproducibleRchunks.templates` stores the default templates that are used for displaying the report information. 
-It is a list of key-value pairs where the key is the final pandoc output format (typically either html, pdf or docx) and the value is a string containing formatting information.
-If html output is chosen, it can contain any valid HTML/CSS code, if the output is pdf, it can contain any valid LaTeX code.
+It is a list of key-value pairs where the key is the final pandoc output format (typically either 'html', 'pdf', or 'docx') and the value is a string containing formatting information.
+If 'html' output is chosen, it can contain any valid HTML/CSS code, if the output is 'pdf', it can contain any valid LaTeX code.
 These formatting instructions can contain two placeholders, which the package will replace with the title of the report (\${title}) and the content of the report (\${content}).
 
 ```{r echo=TRUE, eval=FALSE}
@@ -396,17 +396,17 @@ For example, the following code reformats the appearance of the code report in P
     )
 ```
 
-As mentioned above, if users wish to entirely suppress the default reproducibility reports, they can use the chunk argument `report=FALSE` as part of the code chunk options to suppress the display. 
+As mentioned above, if users wish to entirely suppress the default reproducibility reports, they can use the chunk argument `report=FALSE` as part of the code chunk options to do so. 
 Note that reproduction is still attempted and reproducibility information is still accessible through the function `get_reproducibility_summary()`.
 The other standard chunk options can be used with `reproducibleR`-code chunks as usual. 
-In particular, `eval=FALSE` suppressed execution of the code, `echo=FALSE` suppressed that the code is shown and so forth.
+In particular, `eval=FALSE` suppresses execution of the code, `echo=FALSE` suppresses that the code is shown and so forth.
 
 ### Recommendations
 
 In the following, we give recommendations on how to use the package in typical cases of statistical data analysis and reporting.
 A simple way to start is to replace all classic `R` code chunks with `reproducibleR` code chunks.
 Then, all variables created in the process of a given data analysis will be tested for reproducibility.
-However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all statistical results that researchers find meaningful will perfectly reproduce.
+However, we advise against this procedure as it is likely that some variables will not exactly reproduce even though all statistical results that researchers find meaningful will reproduce perfectly.
 
 ```{r eval=TRUE, include=FALSE}
 library(OpenMx)
@@ -429,37 +429,37 @@ factorFit1 <- mxRun(factorModel1)
 summary(factorFit1)
 ```
 
-Statistical models may often store internal information, which is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error.
-For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time elapsed when fitting the model. 
-Here is an example of the contents of a simple CFA model from the OpenMx documentation called `factorFit1` run on OpenMx's demonstration dataset `demoOneFactor` including 500 observations on five numeric variables. 
-Among information relevant to reproducibility issues, its `output` attribute also contains timing variables `wallTime` and `cpuTime` as well as a timestamp `timestamp`, which will lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility.
-For illustration, here is the content of the `cpuTime` variable and the `timestamp` variable for the aforementioned factor model, which was estimated when this manuscript was generated:
+To explain: Statistical models may often store internal information that is not necessarily relevant to the statistical result but will strictly lead to a non-reproducibility error.
+For example, structural equation models estimated with `OpenMx` [@openmx2] store information about the time that elapsed when fitting the model. 
+Below is an example of the contents of a simple confirmatory factor model from the OpenMx documentation called `factorFit1` run on OpenMx's demonstration dataset `demoOneFactor` including 500 observations on five numeric variables. 
+Among information relevant to check reproducibility of parameter estimates and model fit, its `output` attribute also contains timing variables `wallTime` and `cpuTime` as well as a timestamp `timestamp`, which will lead to a non-reproducibility error if the entire `factorFit1` object is tested for reproducibility.
+For illustration, we show the content of the `cpuTime` variable and the `timestamp` variable for the aforementioned factor model, which was estimated when this manuscript was generated:
 
 ```{r eval=TRUE, echo=TRUE}
 cat(factorFit1$output$cpuTime)
 cat(factorFit1$output$timestamp)
 ```
 
-Thus, we generally recommend a checkpoint approach, in which reproducibility tests are used only at selected, meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (i.e., effect size point estimates, goodness-of-fit indices, standard error estimates, confidence intervals, test statistics, p values, Bayes factors, etc.).
-Specifically, we recommend to use at least the following checkpoints:
+Therefore, we generally recommend a checkpoint approach in which reproducibility tests are used only at selected, meaningful stages of the data analysis process and are used only on variables that contain values that are shown and/or interpreted in the scientific report (e.g., effect size point estimates, goodness-of-fit indices, standard error estimates, confidence intervals, test statistics, p values, Bayes factors, etc.).
+Specifically, we recommend use of at least the following checkpoints:
 
 - Data loading: check whether the loaded raw data are identical to the data loaded in the original analysis
-- Preprocessing: check whether the preprocessed data (that is, after steps such as outlier removal, aggregation, filtering) are identical to the preprocessed data in the original analysis
+- Preprocessing: check whether the preprocessed data (that is, data after steps such as outlier removal, aggregation, filtering) are identical to the preprocessed data in the original analysis
 - Results: check whether the results that are reported in text, tables, and figures are identical to the results of the original analysis.
 At the same time, avoid adding automated tests of entire statistical models but focus on the results.
 
 A convenient approach is to use standard wrapper methods that extract relevant numeric quantities from statistical models, such as parameter estimates, effect size estimates, confidence interval limits, p values, fit indices, or Bayes factors. 
-To this end, several packages support the generic function `coef()`, which can be used, for example, to extract point estimates from linear regression models.
-Other packages offer their own accessor function such as `parTable()` for structural equation models in `lavaan` or `omxGetParameters()`in the aforementioned `OpenMx` model.
-The output of the `summary()` function may be a good target for reproducibility checks because it often contains information about parameter estimates and fit statistics; however, in some cases (as with OpenMx models), it may again contain timing information, which will not exactly reproduce.
-Last, note that sometimes there may small deviations of exact reproducibility, which can be tolerated.
-For example, when comparing reproducibility across machines that work with different numerical precision (32bit vs 64bit), numeric representations may count as reproducible if they are identical up to some numerical precision.
+To this end, several packages support the generic function `coef()` that can be used, for example, to extract point estimates from linear regression models.
+Other packages offer their own accessor function such as `parTable()` for structural equation models in `lavaan` or `omxGetParameters()` in the aforementioned `OpenMx` model.
+The output of the `summary()` function may be a good target for reproducibility checks because it often contains information about parameter estimates and fit statistics; however, in some cases (as with `OpenMx` models), it may again contain timing information, which will not exactly reproduce.
+Note that small deviations of exact reproducibility that can be tolerated may occur.
+For example, when comparing reproducibility across machines that work with different numerical precision (e.g., 32 bit vs 64 bit precision), numeric representations may count as reproducible if they are identical up to some numerical precision.
 To avoid such problems, `reproducibleRchunks` rounds numeric values to a given precision (by default, ten digits).
-Lastly, users may wish to test identity of reproduction up to a certain precision less than the package default.
-This could be relevant for algorithms that are fundamentally based on random numbers, such as Monte Carlo methods, bootstrap estimators and similar (even though, their perfect reproducibility should usually be guarantueed by setting a random seed).
+Finally, users may wish to test identity of reproduction up to a certain precision lower than the package default.
+This could be relevant for algorithms that are fundamentally based on random numbers, such as Monte Carlo methods, bootstrap estimators, and similar [even though their perfect reproducibility should usually be guaranteed by setting a random seed, but see @peikert2021reproducible].
 In this case, approximate reproducibility tests could be realized by individually adjusting the numeric precision of the tests (see option `reproducibleRchunks.digits` as previously described).
-Adherents of the tidyverse approach [@wickham2019welcome] are well advised to use functions `tidy()` and `glance()` from the `broom` [@broom] package.
-These functions convert parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan,smooth.spline, survfit, and others) into a consistent and easily accessible format known as _tibble_. This format is particularly suitable for fingerprinting using our proposed approach.
+Adherents of the tidyverse approach [@wickham2019welcome] are well advised to use functions `tidy()` and `glance()` from the `broom` package [@broom].
+These functions convert parameter estimates and model fit statistics from various statistical models in R (e.g., anova, glm, coxph, gam, lm, lavaan, smooth.spline, survfit, and others) into a consistent and easily accessible format known as _tibble_. This format is particularly suitable for fingerprinting using our proposed approach.
 Here is a brief example of how the `broom` package formats the output of a linear regression model:
 
 ```{r echo=TRUE, eval=TRUE}
@@ -468,44 +468,44 @@ y <- rnorm(10)
 broom::tidy(lm(y~x))
 ```
 
-As a rule of thumb, we recommend to fingerprint the results of all parameter estimates from the `tidy()` function and all model fit statistics from the `glance()` function in a `reproducibleR` chunk. 
+As a rule of thumb, we recommend fingerprinting the results of all parameter estimates from the `tidy()` function and all model fit statistics from the `glance()` function in a `reproducibleR` chunk. 
 
 # Discussion
 
 ## Summary
 
 Dynamic document generation using R Markdown (e.g., reports, posters, or presentations) is an important building block for reproducible research. 
-However, a simple way to automatically verify reproducibility of dynamically generated content within such R Markdown documents is still missing. 
-We developed an R package that enables automatic reproducibility testing of R code chunks within R Markdown documents while requiring essentially no changes to users' workflows.
-This is achieved by storing meta-data about computational results, which can later be used to verify reproducibility.
+However, a simple way to automatically verify reproducibility of dynamically generated content within such R Markdown documents was lacking. 
+We have developed an R package that enables automatic reproducibility testing of R code chunks within R Markdown documents while requiring essentially no changes to users' workflows.
+This is achieved by storing metadata about computational results that can be used later to verify reproducibility.
 Templates allow for customization of the appearance of reproducibility reports; further, the package allows users to generate entirely customized reproducibility reports either within a given R Markdown document or as separate files.
 
 ## Strength and practical implications
 
 Adopting reproducibleR chunks in a workflow offers several benefits.
-First of all, it allows to verify reproducibility manually whenever an R Markdown document is rendered. 
+First of all, it allows manual verification of reproducibility whenever an R Markdown document is rendered. 
 This may be particularly relevant when collaboratively working on scientific reports. 
 Adopting the proposed approach ensures that the same results are generated across all computers of a team of researchers. 
 Even in projects where a person works alone, the proposed workflow is useful. 
 It ensures that all computed results remain consistent throughout the lifecycle of a scientific report, from the first draft through peer-review phases to publication.
 In addition to manually verifying computational results, automatic checks are also possible. Documents can be systematically checked for reproducibility using the function call `isReproducible()`, which takes as input an R Markdown file and returns a logical value indicating whether reproduction was successful. 
 On collaborative platforms like GitHub, reproducibility could be automatically tested with a GitHub action whenever the repository is modified. 
-It's conceivable that journals could use a similar mechanism to check the reproducibility of a paper upon submission.
+It is conceivable that journals could use a similar mechanism to check the reproducibility of a paper upon submission.
 
 
 ## Limitations
 
 Our approach is currently limited to users who rely on R Markdown. 
 Regular R scripts are not amenable to our proposed approach.
-Recently, Quarto [@quarto2024] was proposed as a next-generation Markdown publishing system and it has been gaining popularity. 
+Recently, Quarto [@quarto2024] was proposed as a next-generation Markdown publishing system and its popularity has grown. 
 However, our proposed approach is not yet compatible with Quarto.
 In general, our package relies on the availability and stability of some R functions and packages used for serializing objects and generating fingerprints. Below, we outline these issues and other short-term and long-term issues one may experience with this package.
 
 ### Potential short-term and long-term issues
 
-In the following, we briefly discuss a few future situations, in which threats to reproducibility or reproducibility checking happened and explain how these situations can be dealt with:
+In the following, we briefly discuss a few future scenarios in which threats to reproducibility or reproducibility checking may occur and explain how these situations can be dealt with:
 
-- Original computations were executed and stored in the JSON data file. Later, a reproduction attempt fails using the exact same R Markdown file executed on a different computer. This is a classic case of non-reproducibility, which often is due to changes in the software packages and the R version the computations in the R Markdown rely upon [@epskamp2019reproducibility; @peikert2021samething]. Note that the goal of this package is not to guarantee reproducibility but to allow for automated testing and reporting of reproducibility. To increase the chances of reproducibility in the first place, various solutions exist [@peikert2021samething; @renv2022; @chan2023rang; @nagraj2023pracpac] of which a primary aspect is a way to document and recreate the original computational environment.
+- Original computations were executed and stored in the JSON data file. Later, a reproduction attempt fails using the exact same R Markdown file executed on a different computer. This is a classic case of non-reproducibility that is often due to changes in the software packages and the R version the computations in R Markdown rely upon [@epskamp2019reproducibility; @peikert2021samething]. Note that the goal of this package is not to guarantee reproducibility but to allow for automated testing and reporting of reproducibility. To increase the chances of reproducibility in the first place, various solutions exist [@peikert2021samething; @renv2022; @chan2023rang; @nagraj2023pracpac].
 - Some computations are executed and their original results are stored in a JSON file as planned. Later on, someone modifies the R code in the R Markdown file, such that the results differ and a failure of reproduction is indicated. This change of code between the original computation and the reproduction attempt is caught by the package because fingerprints of the entire code chunk syntax are stored. Users are informed by a warning in the reproducibility report. The package will still try to reproduce each result and give individual reports on successes and failures.
 - The metadata files get lost. Without metadata files, no automated reproducibility check can be made. In this case, it may be a good idea to rerun the analysis in a computing environment as close as possible to the original computing environment and store the newly generated metadata files. It is advisable to manually compare the recreated results to some original reference (e.g., a report or published article) for consistency. 
 - The `reproducibleRchunks` package is not available anymore. In this case, all R Markdown code chunks of type `reproducibleR` can be renamed to `R`, allowing the manuscript to render, albeit without automated reproducibility checks. If there is a large number of code chunks, the following line of code can be inserted in the Markdown document in the very first code chunk, which will tell knitr to render all `reproducibleR` chunks as regular R chunks without the need to rename the chunks: `R knitr::knit_engines$set(reproducibleR = knitr::knit_engines$get("R")`.
@@ -514,25 +514,25 @@ In the following, we briefly discuss a few future situations, in which threats t
 ## Rigor in software development
 
 In developing this package, we adhere to three major aspects of rigor in scientific software development [@brandmaier2024commentary]. 
-First, the package comes with a variety of formal tests (based on the `testthat` package, @testthat2011) to test correct functioning of the package.
+First, the package comes with a variety of formal tests [based on the `testthat` package, @testthat2011] to test correct functioning of the package.
 Second, we provide documentation in form of this manuscript and an online documentation ([https://github.com/brandmaier/reproducibleRchunks](https://github.com/brandmaier/reproducibleRchunks)). 
-Third, bug reports and feature requests can be submitted through our github project website.
+Third, bug reports and feature requests can be submitted through our GitHub project website.
 
 ## Outlook
 
-Again, we emphasize that this package is not meant to ensure reproducibility but allows for automatically testing and verifying reproducibility.
-For example, it would allow for reproducibility checks in peer review as suggested by @cruewell2023 could be automated using this package.
+Again, we emphasize that this package is not meant to ensure reproducibility but allows for automatic testing and verification of reproducibility.
+For example, it would allow for reproducibility checks in peer review as suggested by @cruewell2023 which could be automated using this package.
 According to the authors' convention, the current approach relies on testing whether results are _exactly reproducible_, which is consistent with the idea of awarding an Open Data badge.
-If there was a demand, the package could be extended to support the more fine-grained judgements suggested by @cruewell2023, such as _essentially reproducible_ (minor deviations in the decimals), _partially reproducible_ (minor deviations but the results were mostly numerically consistent),or _mostly not reproducible_ (major deviations).
+If there was a demand, the package could be extended to support the more fine-grained judgements suggested by @cruewell2023, such as _essentially reproducible_ (minor deviations in the decimals), _partially reproducible_ (minor deviations, but the results were mostly numerically consistent), or _mostly not reproducible_ (major deviations).
 Note, however, that the consistent use of R Markdown already eliminates some sources of irreproducibility, such as copy-and-paste errors [@peikert2021samething].
-Even though, a variety of approaches have been suggested to ensure reproducibility of computations in R Markdown documents [@peikert2021samething; @renv2022; @chan2023rang; @nagraj2023pracpac], we ourselves have encountered various situations, in which such approaches (including our own) failed. 
-First and foremost, many approaches rely on further software packages such as Docker, which essentially provide virtual environments that execute code under identical conditions on different machines (or the same machine at different time points, e.g., before and after upgrade of R or some or all packages used).
-On some machines, Docker may simply be not available, either because it is not (yet) available on a certain newly introduced hardware (e.g., this happened when Apple switched to their own processor brand) or because a user does not have admin privileges for installing Docker in the first place.
-Further, some approaches rely on service providers such as Microsoft's MRAN archive, which a while ago was unexpectedly terminated. 
-These different weak points now and then lead to situations, in which users will try to locally reproduce historic computational results and they may want to ensure that these reproductions were succesful.
+Even though a variety of approaches have been suggested to ensure reproducibility of computations in R Markdown documents [@peikert2021samething; @renv2022; @chan2023rang; @nagraj2023pracpac], we ourselves have encountered various scenarios in which such approaches (including our own) failed. 
+First and foremost, many approaches rely on further software packages such as Docker, which essentially provide virtual environments that execute code under identical conditions on different machines (or the same machine at different time points, e.g., before and after an upgrade of R or of some or all packages used).
+On some machines, Docker may simply be not available, either because it is not (yet) available on a certain newly introduced hardware (e.g., this happened when Apple switched to their own processor brand) or because a user does not have admin privileges to install Docker in the first place.
+Further, some approaches rely on service providers such as Microsoft's MRAN archive, which  was unexpectedly terminated a while ago. 
+Now and then, these different weak points lead to situations, in which users will try to locally reproduce historic computational results and may want to ensure that these reproductions were succesful.
 With our package, the success of such reproduction attempts becomes easily and formally testable.
 
-We hope the suggested approach helps raising awareness for the importance of reproduciblity and increasing the visibility of potential non-reproducibility issues in R code, eventually increasing quality and credibility of digital research assets.
+We hope the suggested approach helps to raise awareness for the importance of reproduciblity and increasing the visibility of potential non-reproducibility issues in R code, eventually increasing quality and credibility of digital research assets.
 \newpage
 
 # References
