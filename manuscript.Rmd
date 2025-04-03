@@ -39,7 +39,7 @@ authornote: |
 abstract: |
  Computational results are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust and transparent research in digital environments.
  Various approaches have been suggested to increase chances of reproducibility of R code.
- Many of them rely on R Markdown as a language to dynamically generate reproducible research assets (e.g., reports, posters, or presentations). However, a simple way to automatically verify reproducibility of such R Markdown documents is still missing. 
+ Many of them rely on R Markdown as a tool to dynamically generate reproducible research assets (e.g., reports, posters, or presentations). However, a simple way to automatically verify reproducibility of such R Markdown documents is still missing. 
  We introduce the R package reproducibleRchunks, which automatically stores metadata about original computational results in an R Markdown document and verifies later reproduction attempts automatically.
  With a minimal change to users' workflows, we hope that this approach increases transparency and trustworthiness of digital research assets.
   
@@ -129,11 +129,11 @@ For users already familiar with R Markdown, only two modifications are needed wh
 2. Change the code chunk type from `r` to `reproducibleR` for every code chunk whose reproducibility should be automatically verified.
 
 In `reproducibleR` chunks, all newly declared variables are automatically identified and their contents are stored in a metadata file. 
-Furthermore, information about the code chunk itself (that is, the code syntax) is also stored, such that later non-reproduction can be traced back to either changes of the code chunk or changes of the computational results.
+Furthermore, information about the code chunk itself (that is, the code syntax) is also stored, such that later non-reproduction can be traced back to either changes of the code chunk or changes of the computational environment.
 Once a document is reproduced, all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
 Successes and failures of the reproduction attempts are displayed in a reproducibility report for each chunk.
 Customizations or suppression of these reports are possible as we will demonstrate later.
-A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown language for generating a publishable document from a Markdown source file] Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
+A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown-speak for generating a publishable document from a Markdown source file] Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
 Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over what should be tested for reproducibility and at which stages during the data analysis.
 This allows for forensic examination of non-reproducibility; for example, finding out whether the non-reproducibility is due to changes in the data file, due to the data cleaning or the estimation of a statistical model. 
 Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given statistical data analysis (or any other computation).
@@ -554,7 +554,7 @@ The authors declare no competing interests.
 
 # Data accessibility statement 
 
-The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript.
+The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks or https://cran.r-project.org/web/packages/reproducibleRchunks/. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript.
 
 # Figure titles and legends
 
