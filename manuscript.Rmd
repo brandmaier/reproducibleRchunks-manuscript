@@ -102,17 +102,17 @@ For example, @artner2021reproducibility, were able to reproduce only 70% of majo
  Various approaches have been suggested to increase chances of reproducibility of statistical data analyses in the R language [@peikert2021samething; @renv2022; @chan2023rang; @nagraj2023pracpac].
  Many approaches rely on R Markdown [@rmarkdown2023].
 R Markdown is a simple language, which allows mixing natural language, simple formatting instructions (e.g., what is a headline, what should appear in bold face, or what are list elements), and executable computer code (R, Python, or other languages) in a single document [@xie2018r].
-Whenever an R Markdown document is reproduced, all of its computer code chunks are executed, which allows for the generation of dynamic content in the document.
+Whenever an R Markdown document is rendered, all of its computer code chunks are executed, which allows for the generation of dynamic content in the document.
 This is particularly interesting for quantitative research reports, as  statistical results and contents of tables and figures can be dynamically generated.
 Packages like `papaja` [@R-papaja] or `stargazer` [@R-stargazer] further extend R Markdown's capabilities to format documents (including tables, figures, and statistical results) in a standardized style, such as APA style [@apa].
 As another example, (R) Markdown also forms the basis of _executable research articles_ [@tsang2020welcome], a browser-based form of research articles that allows authors to enrich their publications with interactive elements, such as figures or results that dynamically change based on readers' input.
 A particular advantage of using R Markdown for creating research reports is that it helps to avoid common threats to reproducibility of statistical results, first and foremost, copy-and-paste errors, which happen when results of a regular R script and a scientific report (e.g., a reported statistic or table in a Word document) mismatch by mistake [@peikert2021reproducible];
-further, R Markdown is versatile enough to generate a variety of scientific assets beyond manuscripts, including posters [@posterdown2019], presentations [@xaringan2022], resumés [@vitae2023], or preregistrations [@peikert2021samething], all using the same Markdown approach.
+further, R Markdown is versatile enough to generate a variety of scientific assets beyond manuscripts, including posters [@posterdown2019], presentations [@xaringan2022], resumés [@vitae2023], or preregistrations [@peikert2021samething], all using the same R Markdown approach.
 
 In sum, using R Markdown for the creation of scientific reports including statistical computations comes with various advantages, particularly avoiding copy-and-paste errors as a threat to reproducibility. However, there are still various other sources of errors that are not eliminated solely by using R Markdown. 
 For example, different R versions may lead to different results; a famous example is the change in the random number generator between R versions [@peikert2021reproducible].
 For another example, bugfixes or changes in package defaults across different package versions may go unnoticed and lead to different results.
-Therefore, it is essential to monitor changes in computational results within R Markdown documents throughout the document's entire lifecycle -- from the initial draft, through (peer) review, to publication and long-term storage.
+Therefore, it is essential to monitor changes in computational results within R Markdown documents throughout the document's entire lifecycle --- from the initial draft, through (peer) review, to publication and long-term storage.
 Currently, there is no straightforward, automated method for documenting and verifying reproducibility.
 The `reproducibleRchunks` package addresses this challenge by ensuring that computational results in R Markdown documents are automatically testable for successful reproduction. 
 It verifies whether the same script with the same data produces identical results, even on different computers or at later times, with minimal disruption to users' workflows.
@@ -130,10 +130,10 @@ For users already familiar with R Markdown, only two modifications are needed wh
 
 In `reproducibleR` chunks, all newly declared variables are automatically identified and their contents are stored in a metadata file. 
 Furthermore, information about the code chunk itself (that is, the code syntax) is also stored, such that later non-reproduction can be traced back to either changes of the code chunk or changes of the computational environment.
-Once a document is reproduced, all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
+Once a document is rendered again, all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
 Successes and failures of the reproduction attempts are displayed in a reproducibility report for each chunk.
 Customizations or suppression of these reports are also possible, as we will demonstrate later.
-A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown-speak for generating a publishable document from a Markdown source file.] Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
+A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown-speak for generating a publishable document from a R Markdown source file.] R Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
 Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over what should be tested for reproducibility and at which stages during the data analysis.
 This allows for forensic examination of non-reproducibility; for example, finding out whether the non-reproducibility is due to changes in the data file, due to the data cleaning, or to the estimation of a statistical model. 
 Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given statistical data analysis (or any other computation).
@@ -167,7 +167,7 @@ In this example, we assume that the R Markdown document will eventually be conve
 During initial document conversion, the R code in the `reproducibleR`-chunk is executed and the value of `my_sum` is stored in a separate file (with the prefix _.repro_) that contains all information for further reproducibility verification tests. 
 A reproducibility report is shown in the generated document below the code chunk indicating information about all variables of the given chunk. Figure \@ref(fig:rstudioscreen2) shows a snippet from the HTML report generated during the initial creation of the document.
 
-Once the document is reproduced, that is, generated a second time, and the reproducibility metadata file exists, the computations in the code chunk are rerun, and their results are compared to the stored reproducibility information for each variable.
+Once the document is reredered, that is, generated a second time, and the reproducibility metadata file exists, the computations in the code chunk are rerun, and their results are compared to the stored reproducibility information for each variable.
 The reproducibility report will then detail the success of each reproduction attempt.
 In our example, the computation was successfully reproduced.
 A snippet from the resulting generated document is displayed in Figure \@ref(fig:rstudioscreen3).
@@ -177,7 +177,7 @@ knitr::include_graphics("img/generation-step2.png")
 
 ```
 
-If the document is reproduced and the computational result differs from the original result, the failure to reproduce is noted in the reproducibility report.
+If the document is reredered and the computational result differs from the original result, the failure to reproduce is noted in the reproducibility report.
 In a variation of the previous example, we assume someone changed the value of `x`, the variable `my_sum` would change, and a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
 
 ```{r rstudioscreen4, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and the reproduction of a result has failed.", fig.pos="b"}
@@ -246,7 +246,7 @@ knitr::include_graphics("img/schema-json-fingerprints_v4.png")
 ## Comparisons of computational results
 
 Once a document is (re-)generated with metadata present (i.e., reproducibleRchunks with matching JSON files), the package will compare all objects that are amenable for reproducibility checks.
-Identicality of the original and reproduced results is checked with the `all.equal()` function from R's `base` package. According to the R documentation, it is a "is a utility to compare R objects x and y testing ‘near equality’. If they are different, comparison is still made to some extent, and a report of the differences is returned." [see `?all.equal` R documentation, @R2024].
+Identicality of the original and regenerated results is checked with the `all.equal()` function from R's `base` package. According to the R documentation, it is a "is a utility to compare R objects x and y testing ‘near equality’. If they are different, comparison is still made to some extent, and a report of the differences is returned." [see `?all.equal` R documentation, @R2024].
 
 ### Types of objects
 
