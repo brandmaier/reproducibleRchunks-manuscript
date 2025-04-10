@@ -133,7 +133,7 @@ Furthermore, information about the code chunk itself (that is, the code syntax) 
 Once a document is rendered again, all computational results generated in the `reproducibleR` chunks are automatically tested for reproducibility.
 Successes and failures of the reproduction attempts are displayed in a reproducibility report for each chunk.
 Customizations or suppression of these reports are also possible, as we will demonstrate later.
-A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown-speak for generating a publishable document from a R Markdown source file.] R Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
+A simple way to assess reproducibility of computational results would be a bitwise comparison of the entire knitted^[This is R Markdown-speak for generating a publishable document from an R Markdown source file.] R Markdown document (i.e., the resulting HTML, PDF or DOCX file) to a previous version.
 Yet, a particular advantage of using `reproducibleR` chunks is that users have a fine-grained control over what should be tested for reproducibility and at which stages during the data analysis.
 This allows for forensic examination of non-reproducibility; for example, finding out whether the non-reproducibility is due to changes in the data file, due to the data cleaning, or to the estimation of a statistical model. 
 Using `reproducibleRchunks`, users can separately assess the reproducibility of each stage of a given statistical data analysis (or any other computation).
