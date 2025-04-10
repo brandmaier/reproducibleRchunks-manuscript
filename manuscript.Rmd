@@ -177,7 +177,7 @@ knitr::include_graphics("img/generation-step2.png")
 
 ```
 
-If the document is reredered and the computational result differs from the original result, the failure to reproduce is noted in the reproducibility report.
+If the document is rendered again and the computational result differs from the original result, the failure to reproduce is noted in the reproducibility report.
 In a variation of the previous example, we assume someone changed the value of `x`, the variable `my_sum` would change, and a failure would be displayed (see Figure \@ref(fig:rstudioscreen4)).
 
 ```{r rstudioscreen4, fig.cap="Snippet from a knitted Markdown file showing the reproducibility report when a document is re-generated and the reproduction of a result has failed.", fig.pos="b"}
