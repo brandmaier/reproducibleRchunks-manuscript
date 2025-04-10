@@ -167,7 +167,7 @@ In this example, we assume that the R Markdown document will eventually be conve
 During initial document conversion, the R code in the `reproducibleR`-chunk is executed and the value of `my_sum` is stored in a separate file (with the prefix _.repro_) that contains all information for further reproducibility verification tests. 
 A reproducibility report is shown in the generated document below the code chunk indicating information about all variables of the given chunk. Figure \@ref(fig:rstudioscreen2) shows a snippet from the HTML report generated during the initial creation of the document.
 
-Once the document is reredered, that is, generated a second time, and the reproducibility metadata file exists, the computations in the code chunk are rerun, and their results are compared to the stored reproducibility information for each variable.
+Once the document is rendered a second time, and the reproducibility metadata file exists, the computations in the code chunk are rerun, and their results are compared to the stored reproducibility information for each variable.
 The reproducibility report will then detail the success of each reproduction attempt.
 In our example, the computation was successfully reproduced.
 A snippet from the resulting generated document is displayed in Figure \@ref(fig:rstudioscreen3).
