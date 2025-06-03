@@ -34,7 +34,7 @@ affiliation:
 
 authornote: |
   Please address correspondence to: Andreas M. Brandmaier, Rüdesheimer Str. 50, 14197 Berlin, Germany. Email: andreas.brandmaier@medicalschool-berlin.de.
-  The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript. We thank Julia Delius forher helpful assistance in language and style editing. We also thank Leonie Hagitte for providing comments on an earlier version of the manuscript.
+  The R package described in this article can be downloaded from https://github.com/brandmaier/reproducibleRchunks. The manuscript source code is available at https://github.com/brandmaier/reproducibleRchunks-manuscript. We thank Julia Delius for her helpful assistance in language and style editing. We also thank Leonie Hagitte for providing comments on an earlier version of the manuscript.
 
 abstract: |
  Computational results are considered _reproducible_ if the same computation on the same data yields the same results if performed on a different computer or on the same computer later in time. Reproducibility is a prerequisite for replicable, robust, and transparent research in digital environments.
@@ -60,6 +60,7 @@ footnotelist      : no
 classoption       : "man" #man
 output            : papaja::apa6_pdf
 #output            : papaja::apa6_docx
+keeptex           : yes
 header-includes:
    - \usepackage{amsmath}  # providing non-breaking mbox environment
 ---
@@ -278,7 +279,7 @@ The name of the file will contain the label name (in this example `helloworld`).
 The following code block contains two reproducible results stored in variables `x` and `y`. 
 Those computations can be based on results computed in previous chunks but those variables will not be subject to the reproducibility tests _per se_.
 If the R markdown document is rendered a second time, the computational results are recomputed and compared against the original results. 
-For each result, reproduction success or failureis reported separately.
+For each result, reproduction success or failure is reported separately.
 
 ````markdown
 `r ''````{reproducibleR helloworld, echo=TRUE, eval=TRUE}
@@ -483,8 +484,7 @@ Templates allow for customization of the appearance of reproducibility reports; 
 ## Strength and practical implications
 
 Adopting reproducibleR chunks in a workflow offers several benefits.
-First of all, it allows manual verification of reproducibility whenever an R Markdown document is rendered. 
-This may be particularly relevant when collaboratively working on scientific reports. 
+First of all, it allows manual verification of reproducibility whenever an R Markdown document is rendered. This may be particularly relevant when collaboratively working on scientific reports. 
 Adopting the proposed approach ensures that the same results are generated across all computers of a team of researchers. 
 Even in projects where a person works alone, the proposed workflow is useful. 
 It ensures that all computed results remain consistent throughout the lifecycle of a scientific report, from the first draft through peer-review phases to publication.
@@ -551,6 +551,10 @@ We thank Leonie Hagitte for providing comments on an earlier version of the manu
 # Competing Interests
 
 The authors declare no competing interests.
+
+# Ethics statement
+
+This study did not involve testing of human participants.
 
 # Data accessibility statement 
 
